@@ -1,12 +1,7 @@
-package ca.cal.tp1;
-import ca.cal.tp1.modele.*;
-import ca.cal.tp1.repository.AmendeRepositoryJDBC;
-import ca.cal.tp1.repository.DocumentRepositoryJDBC;
-import ca.cal.tp1.repository.EmpruntRepositoryJDBC;
-import ca.cal.tp1.repository.UtilisateurRepositoryJDBC;
-import ca.cal.tp1.service.EmprunteurService;
-import ca.cal.tp1.service.PreposeService;
-import ca.cal.tp1.service.UtilisateurService;
+package ca.cal.tp2;
+import ca.cal.tp2.modele.*;
+import ca.cal.tp2.repository.*;
+import ca.cal.tp2.service.*;
 import java.sql.SQLException;
 
 

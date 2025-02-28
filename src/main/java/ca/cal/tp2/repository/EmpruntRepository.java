@@ -1,6 +1,6 @@
-package ca.cal.tp1.repository;
+package ca.cal.tp2.repository;
 
-import ca.cal.tp1.modele.Emprunt;
+import ca.cal.tp2.modele.Emprunt;
 
 public interface EmpruntRepository {
 

@@ -1,9 +1,9 @@
-package ca.cal.tp1.service;
+package ca.cal.tp2.service;
 
-import ca.cal.tp1.modele.Amende;
-import ca.cal.tp1.modele.Emprunt;
-import ca.cal.tp1.repository.AmendeRepositoryJDBC;
-import ca.cal.tp1.repository.EmpruntRepositoryJDBC;
+import ca.cal.tp2.modele.Amende;
+import ca.cal.tp2.modele.Emprunt;
+import ca.cal.tp2.repository.AmendeRepositoryJDBC;
+import ca.cal.tp2.repository.EmpruntRepositoryJDBC;
 
 public class EmprunteurService {
     private final AmendeRepositoryJDBC amendeRepositoryJDBC;

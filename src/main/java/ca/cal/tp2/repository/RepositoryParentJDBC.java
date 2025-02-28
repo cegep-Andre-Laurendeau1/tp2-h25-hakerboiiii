@@ -1,11 +1,11 @@
-package ca.cal.tp1.repository;
+package ca.cal.tp2.repository;
 
 import java.sql.*;
 
 public class RepositoryParentJDBC {
 
     static final String JDBC_DRIVER = "org.h2.Driver";
-    static final String URL = "jdbc:h2:mem:tp1;DB_CLOSE_DELAY=-1";
+    static final String URL = "jdbc:h2:mem:tp2;DB_CLOSE_DELAY=-1";
     static final String USER = "sa";
     static final String PASS = "";
     static Connection conn = null;

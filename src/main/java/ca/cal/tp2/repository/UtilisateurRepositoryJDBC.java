@@ -1,8 +1,8 @@
-package ca.cal.tp1.repository;
+package ca.cal.tp2.repository;
 
-import ca.cal.tp1.modele.Emprunteur;
-import ca.cal.tp1.modele.Prepose;
-import ca.cal.tp1.modele.Utilisateur;
+import ca.cal.tp2.modele.Emprunteur;
+import ca.cal.tp2.modele.Prepose;
+import ca.cal.tp2.modele.Utilisateur;
 
 import java.sql.*;
 

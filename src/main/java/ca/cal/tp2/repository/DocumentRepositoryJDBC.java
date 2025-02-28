@@ -1,9 +1,9 @@
-package ca.cal.tp1.repository;
+package ca.cal.tp2.repository;
 
-import ca.cal.tp1.modele.Cd;
-import ca.cal.tp1.modele.Document;
-import ca.cal.tp1.modele.Dvd;
-import ca.cal.tp1.modele.Livre;
+import ca.cal.tp2.modele.Cd;
+import ca.cal.tp2.modele.Document;
+import ca.cal.tp2.modele.Dvd;
+import ca.cal.tp2.modele.Livre;
 
 import java.sql.*;
 

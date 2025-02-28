@@ -1,4 +1,4 @@
-package ca.cal.tp1.modele;
+package ca.cal.tp2.modele;
 
 public class Emprunteur extends Utilisateur{
 

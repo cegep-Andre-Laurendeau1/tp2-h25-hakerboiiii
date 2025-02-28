@@ -1,7 +1,7 @@
-package ca.cal.tp1.service;
+package ca.cal.tp2.service;
 
-import ca.cal.tp1.modele.Document;
-import ca.cal.tp1.repository.DocumentRepositoryJDBC;
+import ca.cal.tp2.modele.Document;
+import ca.cal.tp2.repository.DocumentRepositoryJDBC;
 
 
 public class PreposeService {
