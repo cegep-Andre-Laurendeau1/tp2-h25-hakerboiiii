@@ -1,7 +1,13 @@
 package ca.cal.tp2.modele;
 
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@Entity
+@DiscriminatorValue("CD")
+@NoArgsConstructor
 @Getter
 public class Cd extends Document {
     private String artiste,genre;

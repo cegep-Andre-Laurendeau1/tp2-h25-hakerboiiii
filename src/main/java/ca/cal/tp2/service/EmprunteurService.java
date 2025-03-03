@@ -2,6 +2,7 @@ package ca.cal.tp2.service;
 
 import ca.cal.tp2.modele.Amende;
 import ca.cal.tp2.modele.Emprunt;
+import ca.cal.tp2.modele.Emprunteur;
 import ca.cal.tp2.repository.AmendeRepositoryJDBC;
 import ca.cal.tp2.repository.EmpruntRepositoryJDBC;
 
@@ -14,13 +15,13 @@ public class EmprunteurService {
         this.empruntRepositoryJDBC = empruntRepositoryJDBC;
     }
 
-    public void saveAmende(Long empId, double montant){
-        Amende montantAmende = new Amende(empId, montant);
+    public void saveAmende(Emprunteur emp, double montant){
+        Amende montantAmende = new Amende(emp, montant);
         amendeRepositoryJDBC.save(montantAmende);
     }
 
-    public void saveEmprunt(Long empId){
-        Emprunt emprunt = new Emprunt(empId);
+    public void saveEmprunt(Emprunteur emprunteur){
+        Emprunt emprunt = new Emprunt(emprunteur);
         empruntRepositoryJDBC.saveEmprunt(emprunt);
     }
 }

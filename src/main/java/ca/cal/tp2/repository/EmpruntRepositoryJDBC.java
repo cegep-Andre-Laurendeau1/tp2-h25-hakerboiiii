@@ -2,10 +2,8 @@ package ca.cal.tp2.repository;
 
 import ca.cal.tp2.modele.Emprunt;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
+import java.time.LocalDate;
 
 public class EmpruntRepositoryJDBC extends RepositoryParentJDBC implements EmpruntRepository{
 
@@ -16,7 +14,7 @@ public class EmpruntRepositoryJDBC extends RepositoryParentJDBC implements Empru
 
         try(PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){
             ps.setInt(1, emp.getId_emprunteur());
-            ps.setDate(2, new java.sql.Date(emp.getDate_emprunt().getTime()));
+            ps.setDate(2, Date.valueOf(emp.getDate_emprunt()));
             ps.setString(3, emp.getStatuts());
             ps.executeUpdate();
 

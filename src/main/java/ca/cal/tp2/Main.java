@@ -31,7 +31,7 @@ public class Main {
         service_user.save(new Prepose("Thomas", "hotmail@gmail.com", "514-123-4567"));
         service_user.save(new Prepose("Karim", "claurendeau.qc.ca", "514-322-1902"));
 
-        service_emprunteur.saveAmende(1L, 134.43);
-        service_emprunteur.saveEmprunt(2L);
+        //service_emprunteur.saveAmende(1, 134.43);
+//        service_emprunteur.saveEmprunt();
     }
 }

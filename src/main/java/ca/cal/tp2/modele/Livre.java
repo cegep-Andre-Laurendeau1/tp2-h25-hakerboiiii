@@ -1,7 +1,13 @@
 package ca.cal.tp2.modele;
 
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@Entity
+@DiscriminatorValue("LIVRE")
+@NoArgsConstructor
 @Getter
 public class Livre extends Document{
     private String isbn;
