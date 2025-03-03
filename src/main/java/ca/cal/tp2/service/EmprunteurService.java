@@ -14,12 +14,12 @@ public class EmprunteurService {
         this.empruntRepositoryJDBC = empruntRepositoryJDBC;
     }
 
-    public void saveAmende(int empId, double montant){
+    public void saveAmende(Long empId, double montant){
         Amende montantAmende = new Amende(empId, montant);
         amendeRepositoryJDBC.save(montantAmende);
     }
 
-    public void saveEmprunt(int empId){
+    public void saveEmprunt(Long empId){
         Emprunt emprunt = new Emprunt(empId);
         empruntRepositoryJDBC.saveEmprunt(emprunt);
     }

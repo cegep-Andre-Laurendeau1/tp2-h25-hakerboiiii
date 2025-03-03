@@ -3,22 +3,22 @@ package ca.cal.tp2.modele;
 import lombok.Data;
 import lombok.Setter;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 
 @Data
 public class Amende {
     @Setter
     private Long fineId;
-    private int id_emprunteur;
+    private Long id_emprunteur;
     private double montant;
-    private Date dateCreation;
+    private LocalDate dateCreation;
     private boolean statut;
 
-    public Amende(int id_emprunteur, double montant){
+    public Amende(Long id_emprunteur, double montant){
         this.id_emprunteur = id_emprunteur;
         this.montant = montant;
-        dateCreation = new Date();
+        dateCreation = LocalDate.now();
         statut = false;
     }
 

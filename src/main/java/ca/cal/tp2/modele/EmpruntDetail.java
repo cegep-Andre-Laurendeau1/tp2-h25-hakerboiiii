@@ -1,22 +1,24 @@
 package ca.cal.tp2.modele;
 
-import java.util.Date;
-//todo: Fixer: changer Date pour LocalDate;
-//todo: Fixer: faire le lien avec classe Emprunt et Document. Utiliser collection.
+import lombok.Data;
+import lombok.Setter;
 
+import java.time.LocalDate;
+
+@Data
 public class EmpruntDetail {
-    private int lineItemId;
-    private int emprunt_id;
-    private int document_id;
-    private Date dateRetourPrevue;
-    private Date dateRetourActuelle;
+@Setter
+    private Long lineItemId;
+    private Long emprunt_id;
+    private Long document_id;
+    private LocalDate dateRetourPrevue;
+    private LocalDate dateRetourActuelle;
     private String status;
 
-    public EmpruntDetail(int emprunt_id, int document_id, int nb_semaines) {
+    public EmpruntDetail(Long emprunt_id, Long document_id, Long nb_semaines) {
         this.emprunt_id = emprunt_id;
         this.document_id = document_id;
-        this.dateRetourPrevue = new Date(System.currentTimeMillis() +
-                (nb_semaines * 7 * 24 * 60 * 60 * 1000));
+        this.dateRetourPrevue = LocalDate.now().plusWeeks(nb_semaines);
         this.status = "Emprunte";
     }
 }
