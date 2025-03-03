@@ -32,4 +32,5 @@ public abstract class Document {
         this.nbExemplaires = nbExemplaires;
     }
     public abstract String getSql();
+    public abstract Long nbSemaines();
 }

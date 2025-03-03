@@ -30,6 +30,4 @@ public class Emprunteur extends Utilisateur{
     public List<Amende> getAmendes() {
         return amendes;
     }
-
-
 }

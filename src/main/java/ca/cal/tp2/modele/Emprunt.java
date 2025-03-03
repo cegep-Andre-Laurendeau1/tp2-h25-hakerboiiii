@@ -28,7 +28,7 @@ public class Emprunt {
     private LocalDate date_emprunt;
     private String statuts;
 
-    @OneToMany(mappedBy = "emprunt", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "emprunt", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EmpruntDetail> empruntDetails = new ArrayList<>();
 
 

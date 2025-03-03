@@ -24,4 +24,9 @@ public class Cd extends Document {
     public String getSql(){
         return "INSERT INTO Cd VALUES (?,?,?,?)";
     }
+
+    @Override
+    public Long nbSemaines() {
+        return 2L;
+    }
 }

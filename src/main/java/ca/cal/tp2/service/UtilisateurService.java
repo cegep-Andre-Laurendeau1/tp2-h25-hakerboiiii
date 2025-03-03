@@ -6,7 +6,6 @@ import ca.cal.tp2.repository.UtilisateurRepository;
 import ca.cal.tp2.service.dto.UtilisateurDTO;
 
 public class UtilisateurService {
-    //public final UtilisateurRepositoryJDBC utilisateurRepositoryJDBC;
     private final UtilisateurRepository utilisateurRepository;
 
     public UtilisateurService(UtilisateurRepository utilisateurRepository) {

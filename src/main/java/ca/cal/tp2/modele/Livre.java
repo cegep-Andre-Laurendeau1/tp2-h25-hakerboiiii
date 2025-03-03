@@ -27,4 +27,11 @@ public class Livre extends Document{
         return "INSERT INTO Livre (id_livre, isbn, auteur, editeur, " +
                 "nbPages) VALUES (?, ?, ?, ?, ?)";
     }
+
+    @Override
+    public Long nbSemaines() {
+        return 3L;
+    }
+
+
 }

@@ -17,6 +17,7 @@ public class Main {
         // Votre script qui utilise votre API ici
         UtilisateurService utilisateurService = new UtilisateurService(new UtilisateurRepositoryJPA());
         PreposeService preposeService = new PreposeService(new PreposeRepositoryJPA());
+        EmprunteurService emprunteurService = new EmprunteurService(new EmprunteurRepositoryJPA());
 
 //        try{
 //            Emprunteur emp = new Emprunteur("toto", "toto@gmail.com", "514-123-4567");
@@ -41,6 +42,11 @@ public class Main {
 //        catch(DatabaseException e){
 //            System.out.println("Erreur bd: " + e.getMessage());
 //        }
+
+
+        emprunteurService.emprunter(new Livre("Harry Potter", 12, "sadasdas",
+                "J.K. Rowling", "LePage", 1997));
+
 
         try {
             System.out.println(preposeService.rechercherDocument("Harry Potter"));
