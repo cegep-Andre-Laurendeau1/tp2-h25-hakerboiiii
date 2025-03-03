@@ -47,6 +47,7 @@ public class Amende {
     }
 
 
-
-
+    public int getId_emprunteur() {
+        return 0;
+    }
 }

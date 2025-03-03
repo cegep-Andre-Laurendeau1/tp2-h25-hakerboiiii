@@ -38,4 +38,8 @@ public class Emprunt {
         this.statuts = "Active";
 
     }
+
+    public int getId_emprunteur() {
+        return id_emprunt;
+    }
 }

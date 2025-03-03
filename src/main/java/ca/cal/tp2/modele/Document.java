@@ -8,12 +8,13 @@ import lombok.Setter;
 
 @Entity
 @Getter
+@Data
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "type_document", discriminatorType = DiscriminatorType.STRING)
 @NoArgsConstructor
 @Table
 public abstract class Document {
-
+    @Setter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id_document;

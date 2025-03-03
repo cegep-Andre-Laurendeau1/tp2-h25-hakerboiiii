@@ -1,37 +1,63 @@
 package ca.cal.tp2;
+import ca.cal.tp2.exception.DatabaseException;
 import ca.cal.tp2.modele.*;
 import ca.cal.tp2.repository.*;
 import ca.cal.tp2.service.*;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jdk.jshell.execution.Util;
+
+import javax.xml.crypto.Data;
 import java.sql.SQLException;
 
 
 //todo: Fixer: Pas mettre new Livre dans entreNouveaudocument() La même chose pour les utilisateurs. Utiliser DTO pour passer les parametres;
 
 public class Main {
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args) throws InterruptedException, DatabaseException {
         // Votre script qui utilise votre API ici
-        TcpServeur.startTcpServer();
-        PreposeService service_doc = new PreposeService(new DocumentRepositoryJDBC());
-        UtilisateurService service_user = new UtilisateurService(new UtilisateurRepositoryJDBC());
-        EmprunteurService service_emprunteur = new EmprunteurService(
-                new AmendeRepositoryJDBC(),
-                new EmpruntRepositoryJDBC());
+        UtilisateurService utilisateurService = new UtilisateurService(new UtilisateurRepositoryJPA());
+        PreposeService preposeService = new PreposeService(new PreposeRepositoryJPA());
+
+//        try{
+//            Emprunteur emp = new Emprunteur("toto", "toto@gmail.com", "514-123-4567");
+//            Prepose prepose = new Prepose("Bobby", "zmkda22@hotmail", "514-230-1222");
+//            utilisateurService.save(emp);
+//            utilisateurService.save(prepose);
+//        }
+//         catch(DatabaseException e){
+//            System.out.println("Erreur bd: " + e.getMessage());
+//         }
+
+//        try{
+//            preposeService.entreNouveauDocument(new Livre("Harry Potter", 12, "sadasdas",
+//                    "J.K. Rowling", "LePage", 1997));
+//            preposeService.entreNouveauDocument(new Cd("Thriller", 5, "Michael Jackson",
+//                    60, "Pop"));
+//            preposeService.entreNouveauDocument(new Dvd("Le seigneur des anneaux", 3,
+//                    "Peter Jackson", 180, "PG-13"));
+//
+//
+//        }
+//        catch(DatabaseException e){
+//            System.out.println("Erreur bd: " + e.getMessage());
+//        }
+
+        try {
+            System.out.println(preposeService.rechercherDocument("Harry Potter"));
+        } catch (DatabaseException e) {
+            System.out.println("Erreur bd: " + e.getMessage());
+        }
 
 
-        service_doc.entreNouveauDocument(new Livre("La bete humaine", 8, "isbn", "Émile Zola", "LePage", 500));
-        service_doc.entreNouveauDocument(new Livre ("1984", 12, "isbn", "George Orwell", "LePage", 300));
+        try{
+            System.out.println(utilisateurService.findUtilisateur("toto", "toto@gmail.com"));
+        }
 
-        service_doc.entreNouveauDocument(new Cd("Thriller", 5, "Michael Jackson", 60, "Pop"));
-        service_doc.entreNouveauDocument(new Dvd("Le seigneur des anneaux", 3, "Peter Jackson", 180, "PG-13"));
+        catch(DatabaseException e){
+            System.out.println("Erreur bd: " + e.getMessage());
+        }
 
+        Thread.currentThread().join(); // Keep the program running
 
-        service_user.save(new Emprunteur("Mohamed", "shahed@gmail.com", "514-706-3301"));
-        service_user.save(new Emprunteur("Jean", "jean@gmail.com", "514-199-1000"));
-
-        service_user.save(new Prepose("Thomas", "hotmail@gmail.com", "514-123-4567"));
-        service_user.save(new Prepose("Karim", "claurendeau.qc.ca", "514-322-1902"));
-
-        //service_emprunteur.saveAmende(1, 134.43);
-//        service_emprunteur.saveEmprunt();
     }
 }
