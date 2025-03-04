@@ -25,9 +25,24 @@ public class EmprunteurRepositoryJPA implements EmprunteurRepository {
             List<Emprunteur> emprunteurs = query.getResultList();
 
             if(!emprunteurs.isEmpty())
-                emprunteur = emprunteurs.get(0);
+                emprunteur = emprunteurs.getFirst();
             else{
                 em.persist(emprunteur);
+                em.flush();
+            }
+
+            //Doit implémenter cela, car sinon la base de donnée persiste le même enregistrement
+            // à chaque fois qu'on emprunte un document.
+            TypedQuery<Document> documentQuery = em.createQuery(
+                    "SELECT d FROM Document d WHERE d.titre = :titre", Document.class);
+            documentQuery.setParameter("titre", doc.getTitre());
+            List<Document> documents = documentQuery.getResultList();
+
+            if(!documents.isEmpty()){
+                doc = documents.getFirst();
+            }
+            else{
+                em.persist(doc);
                 em.flush();
             }
 
@@ -42,7 +57,13 @@ public class EmprunteurRepositoryJPA implements EmprunteurRepository {
             em.persist(empruntDetail);
 
             doc.setNbExemplaires(doc.getNbExemplaires() - 1);
-            em.merge(doc);
+
+            em.createQuery(
+                    " UPDATE Document d SET d.nbExemplaires = :newValue WHERE d.id_document = :id")
+                            .setParameter("newValue", doc.getNbExemplaires())
+                            .setParameter("id", doc.getId_document())
+                            .executeUpdate();
+
 
             em.getTransaction().commit();
 

@@ -11,8 +11,7 @@ public class EmprunteurService {
         this.emprunteurRepository = emprunteurRepository;
     }
 
-    public void emprunter(Document doc){
-        Emprunteur emp = findEmprunteur();
+    public void emprunter(Emprunteur emp, Document doc){
         emprunteurRepository.emprunter(emp, doc);
     }
 

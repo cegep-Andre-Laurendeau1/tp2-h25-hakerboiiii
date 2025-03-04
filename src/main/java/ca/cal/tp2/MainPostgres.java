@@ -3,18 +3,30 @@ import ca.cal.tp2.exception.DatabaseException;
 import ca.cal.tp2.modele.*;
 import ca.cal.tp2.repository.*;
 import ca.cal.tp2.service.*;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jdk.jshell.execution.Util;
-
-import javax.xml.crypto.Data;
-import java.sql.SQLException;
 
 
 //todo: Fixer: Pas mettre new Livre dans entreNouveaudocument() La même chose pour les utilisateurs. Utiliser DTO pour passer les parametres;
 
-public class Main {
+public class MainPostgres {
     public static void main(String[] args) throws InterruptedException, DatabaseException {
         // Votre script qui utilise votre API ici
+        //Création des modèles
+
+        Livre livre = new Livre("Harry Potter", 12, "sadasdas",
+                "J.K. Rowling", "LePage", 1997);
+        Cd cd = new Cd("Thriller", 5, "Michael Jackson",
+                    60, "Pop");
+        Dvd dvd = new Dvd("Le seigneur des anneaux", 3,
+                    "Peter Jackson", 180, "PG-13");
+
+        Emprunteur thomas = new Emprunteur("toto", "toto@gmail.com", "514-123-4567");
+        Emprunteur alice = new Emprunteur("Alice", "alice@exaple.com", "514-123-4567");
+
+        Prepose bob = new Prepose("Bob", "bob@gmail.com", "514-123-4567");
+        Prepose bobby = new Prepose("Bobby", "zmkda22@hotmail", "514-230-1222");
+
+
+
         UtilisateurService utilisateurService = new UtilisateurService(new UtilisateurRepositoryJPA());
         PreposeService preposeService = new PreposeService(new PreposeRepositoryJPA());
         EmprunteurService emprunteurService = new EmprunteurService(new EmprunteurRepositoryJPA());
@@ -44,12 +56,10 @@ public class Main {
 //        }
 
 
-        emprunteurService.emprunter(new Livre("Harry Potter", 12, "sadasdas",
-                "J.K. Rowling", "LePage", 1997));
-
+        emprunteurService.emprunter(alice, cd);
 
         try {
-            System.out.println(preposeService.rechercherDocument("Harry Potter"));
+            System.out.println(preposeService.rechercherDocument("Le seigneur des anneaux"));
         } catch (DatabaseException e) {
             System.out.println("Erreur bd: " + e.getMessage());
         }
