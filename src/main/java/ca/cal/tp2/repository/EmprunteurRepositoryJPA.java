@@ -1,5 +1,6 @@
 package ca.cal.tp2.repository;
 
+import ca.cal.tp2.exception.DatabaseException;
 import ca.cal.tp2.modele.*;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -47,7 +48,8 @@ public class EmprunteurRepositoryJPA implements EmprunteurRepository {
             }
 
             if(doc.getNbExemplaires() <= 0) {
-                throw new RuntimeException("Il n'y a plus d'exemplaires disponibles");
+                throw new RuntimeException("Il n'y a plus d'exemplaires disponibles pour le document :  " +
+                        doc.getTitre());
             }
 
             Emprunt emprunt = new Emprunt(emprunteur);
@@ -80,19 +82,54 @@ public class EmprunteurRepositoryJPA implements EmprunteurRepository {
         try(EntityManager em = entityManagerFactory.createEntityManager()){
             em.getTransaction().begin();
 
+            //Assure que l'emprunteur existe dans la base de données. Sinon, je risque une exception.+-
+            TypedQuery<Emprunteur> queryEmp = em.createQuery(
+                    "SELECT u FROM Utilisateur u WHERE u.email = :email " +
+                            " AND TYPE(u) = Emprunteur ", Emprunteur.class);
+            queryEmp.setParameter("email", emprunteur.getEmail());
+            List<Emprunteur> emprunteurs = queryEmp.getResultList();
+
+            if(!emprunteurs.isEmpty()){
+                emprunteur = emprunteurs.getFirst();
+            }
+            else{
+                throw new RuntimeException("L'emprunteur n'existe pas dans la base de données");
+            }
+
+            TypedQuery<Document> queryDoc = em.createQuery(
+                    "SELECT d FROM Document d WHERE d.titre = :titre", Document.class);
+            queryDoc.setParameter("titre", doc.getTitre());
+            List<Document> documents = queryDoc.getResultList();
+            if(!documents.isEmpty()){
+                doc = documents.getFirst();
+            }
+            else{
+                throw new RuntimeException("Le document n'existe pas dans la base de données");
+            }
+
+
             TypedQuery<EmpruntDetail> query = em.createQuery(
                     "SELECT ed FROM EmpruntDetail ed WHERE ed.emprunt.emprunteur = :emprunteur" +
                             " AND ed.document = :doc AND ed.status = 'Emprunte'", EmpruntDetail.class);
             query.setParameter("emprunteur", emprunteur);
             query.setParameter("doc", doc);
-            EmpruntDetail empruntDetail = query.getSingleResult();
+            List<EmpruntDetail> empruntDetails = query.getResultList();
 
+            if(empruntDetails.isEmpty()){
+                throw new RuntimeException("L'emprunteur n'a pas emprunté ce document");
+            }
+            EmpruntDetail empruntDetail = empruntDetails.getFirst();
             empruntDetail.setDateRetourActuelle(LocalDate.now());
             empruntDetail.updateStatus();
             em.merge(empruntDetail);
 
             doc.setNbExemplaires(doc.getNbExemplaires() + 1);
-            em.merge(doc);
+            em.createQuery(
+                    "UPDATE Document d SET d.nbExemplaires = :newvalue WHERE d.id_document = :id")
+                    .setParameter("newvalue", doc.getNbExemplaires())
+                    .setParameter("id", doc.getId_document())
+                    .executeUpdate();
+
 
             if(empruntDetail.isEnRetard()){
                 double montant = empruntDetail.calculAmende();

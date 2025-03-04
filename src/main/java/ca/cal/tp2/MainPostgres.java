@@ -14,6 +14,10 @@ public class MainPostgres {
 
         Livre livre = new Livre("Harry Potter", 12, "sadasdas",
                 "J.K. Rowling", "LePage", 1997);
+        Livre roman = new Livre("La bete humaine", 1, "isbn",
+                "Émile Zola", "France", 500);
+
+
         Cd cd = new Cd("Thriller", 5, "Michael Jackson",
                     60, "Pop");
         Dvd dvd = new Dvd("Le seigneur des anneaux", 3,
@@ -54,9 +58,8 @@ public class MainPostgres {
 //        catch(DatabaseException e){
 //            System.out.println("Erreur bd: " + e.getMessage());
 //        }
-
-
-        emprunteurService.emprunter(alice, cd);
+        //preposeService.entreNouveauDocument(roman);
+        emprunteurService.retourneDocument(alice, roman);
 
         try {
             System.out.println(preposeService.rechercherDocument("Le seigneur des anneaux"));
