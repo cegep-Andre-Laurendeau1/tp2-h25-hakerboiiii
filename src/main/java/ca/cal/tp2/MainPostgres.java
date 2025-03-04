@@ -59,7 +59,7 @@ public class MainPostgres {
 //            System.out.println("Erreur bd: " + e.getMessage());
 //        }
         //preposeService.entreNouveauDocument(roman);
-        emprunteurService.retourneDocument(alice, roman);
+        emprunteurService.retourneDocument(thomas, roman);
 
         try {
             System.out.println(preposeService.rechercherDocument("Le seigneur des anneaux"));
