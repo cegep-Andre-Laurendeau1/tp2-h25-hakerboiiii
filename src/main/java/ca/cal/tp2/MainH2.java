@@ -1,5 +1,4 @@
 package ca.cal.tp2;
-import ca.cal.tp2.TcpServeur;
 import ca.cal.tp2.exception.DatabaseException;
 import ca.cal.tp2.modele.*;
 import ca.cal.tp2.repository.EmprunteurRepositoryJPA;
@@ -9,7 +8,6 @@ import ca.cal.tp2.service.EmprunteurService;
 import ca.cal.tp2.service.PreposeService;
 import ca.cal.tp2.service.UtilisateurService;
 import ca.cal.tp2.service.dto.DocumentDTO;
-import jakarta.persistence.EntityManagerFactory;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -21,10 +19,13 @@ public class MainH2 {
 
         Livre livre = new Livre("Harry Potter", 12, 2002, "sadasdas",
                 "J.K. Rowling", "LePage", 1997);
-        Livre roman = new Livre("La bete humaine", 1, 1888, "isbn",
+        Livre bete_humaine = new Livre("La bete humaine", 1, 1888, "isbn",
                 "Émile Zola", "France", 500);
         Livre germinal = new Livre("Germinal", 1, 1884, "isbn",
                 "Émile Zola", "France", 500);
+        Livre germinal_duplique = new Livre("Germinal", 4, 1884, "isbn",
+                "Émile Zola", "France", 500);
+
         Livre potter = new Livre("Harry Potter: Kingdom", 12, 2002, "sadasdas",
                 "J.K. Rowling", "LePage", 2001);
 
@@ -54,8 +55,9 @@ public class MainH2 {
             utilisateurService.save(bobby);
 
             preposeService.entreNouveauDocument(livre);
-            preposeService.entreNouveauDocument(roman);
+            preposeService.entreNouveauDocument(bete_humaine);
             preposeService.entreNouveauDocument(germinal);
+            preposeService.entreNouveauDocument(germinal_duplique); //est mise a jour. Donc, 5 exemplaires.
             preposeService.entreNouveauDocument(potter);
             preposeService.entreNouveauDocument(cd);
             preposeService.entreNouveauDocument(cd2);
@@ -64,6 +66,37 @@ public class MainH2 {
             List<DocumentDTO> documents =
                     preposeService.rechercherDocument("Potter", null, null, null);
             documents.forEach(System.out::println);
+
+            emprunteurService.emprunter(alice, livre);
+            emprunteurService.emprunter(alice, bete_humaine);
+            emprunteurService.emprunter(alice, germinal);
+
+            emprunteurService.emprunter(thomas, cd);
+
+
+            List<EmpruntDetail> emprunts = emprunteurService.retournerListeEmprunts(alice);
+
+            System.out.println("Liste des emprunts de : " + alice.getNom() + "(" + alice.getEmail() + ")");
+
+            if(emprunts.isEmpty()){
+                System.out.println("Aucun empprunt");
+            }
+            else {
+                System.out.println("-----------------------------------------------------");
+                System.out.printf("%-30s | %-12s | %-12s\n", "Titre du document", "Date Emprunt",
+                        "Jour de retour");
+                System.out.println("-----------------------------------------------------");
+                for (EmpruntDetail empruntDetail : emprunts) {
+                    System.out.printf("%-30s | %-12s | %-12s\n",
+                            empruntDetail.getDocument().getTitre(),
+                            empruntDetail.getEmprunt().getDate_emprunt(),
+                            empruntDetail.getDateRetourPrevue());
+                }
+                System.out.println("-----------------------------------------------------");
+            }
+            //emprunteurService.emprunter(thomas, bete_humaine); //Erreur: plus d'exemplaires
+
+
 
         } catch (DatabaseException e) {
             throw new RuntimeException(e);

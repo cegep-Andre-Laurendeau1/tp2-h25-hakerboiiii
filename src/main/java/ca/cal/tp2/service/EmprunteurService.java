@@ -2,8 +2,11 @@ package ca.cal.tp2.service;
 
 import ca.cal.tp2.exception.DatabaseException;
 import ca.cal.tp2.modele.Document;
+import ca.cal.tp2.modele.EmpruntDetail;
 import ca.cal.tp2.modele.Emprunteur;
 import ca.cal.tp2.repository.EmprunteurRepository;
+
+import java.util.List;
 
 public class EmprunteurService {
     private final EmprunteurRepository emprunteurRepository;
@@ -18,6 +21,10 @@ public class EmprunteurService {
     public void retourneDocument(Emprunteur emp, Document doc){
 
         emprunteurRepository.retourneDocument(emp, doc);
+    }
+
+    public List<EmpruntDetail> retournerListeEmprunts(Emprunteur emp){
+        return emprunteurRepository.chercherListeEmprunts(emp);
     }
 
 }

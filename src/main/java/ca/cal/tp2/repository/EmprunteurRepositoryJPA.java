@@ -145,4 +145,18 @@ public class EmprunteurRepositoryJPA implements EmprunteurRepository {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public List<EmpruntDetail> chercherListeEmprunts(Emprunteur emp){
+        try(EntityManager em = entityManagerFactory.createEntityManager()){
+            TypedQuery query = em.createQuery(
+                    "SELECT ed FROM EmpruntDetail ed" +
+                            " JOIN ed.emprunt e  " +
+                            " JOIN e.emprunteur u " +
+                            " WHERE type(u) = Emprunteur AND u.email  = :email" +
+                            " ORDER BY ed.dateRetourPrevue ASC", EmpruntDetail.class);
+            query.setParameter("email", emp.getEmail());
+            return query.getResultList();
+        }
+    }
 }

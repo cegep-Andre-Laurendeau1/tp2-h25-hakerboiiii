@@ -20,9 +20,6 @@ public class PreposeService {
         preposeRepository.saveDocument(document);
     }
 
-//    public DocumentDTO rechercherDocument(String titre) throws DatabaseException{
-//        return DocumentDTO.toDTO(preposeRepository.findDocument(titre));
-//    }
 
     public List<DocumentDTO> rechercherDocument(String titre, String auteur, Integer annee, String artiste) throws DatabaseException{
         return preposeRepository.findDocument(titre, auteur, annee, artiste);

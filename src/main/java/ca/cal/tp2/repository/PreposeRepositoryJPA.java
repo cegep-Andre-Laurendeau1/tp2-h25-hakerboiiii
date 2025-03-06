@@ -23,7 +23,22 @@ public class PreposeRepositoryJPA implements PreposeRepository {
     public void saveDocument(Document doc) throws DatabaseException {
         try(EntityManager em = entityManagerFactory.createEntityManager()) {
             em.getTransaction().begin();
-            em.persist(doc);
+            TypedQuery<Document> query = em.createQuery(
+                    "SELECT d FROM Document d WHERE d.titre = :titre", Document.class);
+            query.setParameter("titre", doc.getTitre());
+            List<Document> documentsExistant = query.getResultList();
+
+            if(!documentsExistant.isEmpty()){
+                Document docExistant = documentsExistant.getFirst();
+                docExistant.setNbExemplaires(docExistant.getNbExemplaires() + doc.getNbExemplaires());
+                em.merge(docExistant);
+                System.out.println("Document existant. Mise a jour du nombre d'exemplaires: "
+                        + docExistant.getNbExemplaires());
+            }
+
+            else{
+                em.persist(doc);
+            }
             em.getTransaction().commit();
         } catch (Exception e) {
             throw new DatabaseException(e);
@@ -33,18 +48,6 @@ public class PreposeRepositoryJPA implements PreposeRepository {
 
     @Override
     public List<DocumentDTO> findDocument(String titre, String auteur, Integer annee, String artiste) throws DatabaseException {
-//        try(EntityManager em = entityManagerFactory.createEntityManager()){
-//            TypedQuery<Document> query = em.createQuery("SELECT d FROM Document d" +
-//                    " WHERE d.titre = :titre", Document.class);
-//            query.setParameter("titre", titre);
-//            return query.getSingleResult();
-//        }
-//
-//        catch(Exception e) {
-//            throw new DatabaseException(e);
-//        }
-
-
         try(EntityManager em = entityManagerFactory.createEntityManager()){
             StringBuilder queryString = new StringBuilder("SELECT d FROM Document d WHERE 1=1");
             if(titre != null && !titre.isEmpty())
