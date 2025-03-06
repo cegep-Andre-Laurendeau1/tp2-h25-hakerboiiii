@@ -45,7 +45,8 @@ public class PreposeRepositoryJPA implements PreposeRepository {
         }
     }
     @Override
-    public List<DocumentDTO> findDocument(String titre, String auteur, Integer annee, String artiste) throws DatabaseException {
+    public List<DocumentDTO> findDocument(String titre, String auteur,
+                                          Integer annee, String artiste) throws DatabaseException {
         try(EntityManager em = entityManagerFactory.createEntityManager()){
             TypedQuery<Document> query = buildQuery(em, titre, auteur, annee, artiste);
             List<Document> resultats = query.getResultList();
