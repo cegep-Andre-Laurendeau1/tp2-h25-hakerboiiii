@@ -15,8 +15,6 @@ import java.util.List;
 public class MainH2 {
     public static void main(String[] args) throws SQLException, DatabaseException {
         TcpServeur.startTcpServer();
-
-
         Livre livre = new Livre("Harry Potter", 12, 2002, "sadasdas",
                 "J.K. Rowling", "LePage", 1997);
         Livre bete_humaine = new Livre("La bete humaine", 1, 1888, "isbn",
@@ -46,6 +44,7 @@ public class MainH2 {
         UtilisateurService utilisateurService = new UtilisateurService(new UtilisateurRepositoryJPA());
         PreposeService preposeService = new PreposeService(new PreposeRepositoryJPA());
         EmprunteurService emprunteurService = new EmprunteurService(new EmprunteurRepositoryJPA());
+        EmprunteurRepositoryJPA tester = new EmprunteurRepositoryJPA(); //tester pour les emprunts retardataires.
 
 
         try{
@@ -72,31 +71,33 @@ public class MainH2 {
             emprunteurService.emprunter(alice, germinal);
             emprunteurService.emprunter(thomas, cd);
 
-//
-//            List<EmpruntDetail> emprunts = emprunteurService.retournerListeEmprunts(alice);
-//
-//            System.out.println("Liste des emprunts de : " + alice.getNom() + "(" + alice.getEmail() + ")");
-//
-//            if(emprunts.isEmpty()){
-//                System.out.println("Aucun empprunt");
-//            }
-//            else {
-//                System.out.println("-----------------------------------------------------");
-//                System.out.printf("%-30s | %-12s | %-12s\n", "Titre du document", "Date Emprunt",
-//                        "Jour de retour");
-//                System.out.println("-----------------------------------------------------");
-//                for (EmpruntDetail empruntDetail : emprunts) {
-//                    System.out.printf("%-30s | %-12s | %-12s\n",
-//                            empruntDetail.getDocument().getTitre(),
-//                            empruntDetail.getEmprunt().getDate_emprunt(),
-//                            empruntDetail.getDateRetourPrevue());
-//                }
-//                System.out.println("-----------------------------------------------------");
-//            }
-            //emprunteurService.emprunter(thomas, bete_humaine); //Erreur: plus d'exemplaires
+
+            List<EmpruntDetail> emprunts = emprunteurService.retournerListeEmprunts(alice);
+
+            System.out.println("Liste des emprunts de : " + alice.getNom() + "(" + alice.getEmail() + ")");
+
+            if(emprunts.isEmpty()){
+                System.out.println("Aucun empprunt");
+            }
+            else {
+                System.out.println("-----------------------------------------------------");
+                System.out.printf("%-30s | %-12s | %-12s\n", "Titre du document", "Date Emprunt",
+                        "Jour de retour");
+                System.out.println("-----------------------------------------------------");
+                for (EmpruntDetail empruntDetail : emprunts) {
+                    System.out.printf("%-30s | %-12s | %-12s\n",
+                            empruntDetail.getDocument().getTitre(),
+                            empruntDetail.getEmprunt().getDate_emprunt(),
+                            empruntDetail.getDateRetourPrevue());
+                }
+                System.out.println("-----------------------------------------------------");
+            }
+            //emprunteurService.emprunter(thomas, bete_humaine); //Erreur: Aucun d'exemplaires disponibles.
 
             emprunteurService.retourneDocument(alice, livre);
             emprunteurService.retourneDocument(alice, bete_humaine);
+            tester.testRetounerEnRetard();
+            emprunteurService.retourneDocument(thomas, cd);
 
 
 

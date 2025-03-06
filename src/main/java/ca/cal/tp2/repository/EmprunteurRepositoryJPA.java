@@ -76,7 +76,7 @@ public class EmprunteurRepositoryJPA implements EmprunteurRepository {
                 double montant = empruntDetail.calculAmende();
                 Amende amende = new Amende(emprunteur, montant);
                 em.persist(amende);
-                System.out.println("Amende de " + montant + " a été ajoutée à l'emprunteur " + emprunteur.getNom());
+                System.out.println("Amende de " + montant + "$ a été ajoutée à l'emprunteur " + emprunteur.getNom());
             }
 
             em.getTransaction().commit();
@@ -133,5 +133,19 @@ public class EmprunteurRepositoryJPA implements EmprunteurRepository {
         query.setParameter("doc", doc);
         List<EmpruntDetail> empruntDetails = query.getResultList();
         return empruntDetails.isEmpty() ? null : empruntDetails.getFirst();
+    }
+
+    //Méthode qui hardcode et modifie la date de retour prévue d'un emprunt pour tester
+    // les cas de retours qui sont en retard.
+    public void testRetounerEnRetard(){
+        String sql = "UPDATE  EMPRUNTDETAIL SET DATERETOURPREVUE = '2025-02-01' WHERE EMPRUNT_ID = 4";
+        try(EntityManager em = entityManagerFactory.createEntityManager()){
+            em.getTransaction().begin();
+            em.createNativeQuery(sql).executeUpdate();
+            em.getTransaction().commit();
+        }
+        catch (Exception e){
+            throw new RuntimeException(e);
+        }
     }
 }
