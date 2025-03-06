@@ -13,7 +13,7 @@ import java.util.List;
 
 public class EmprunteurRepositoryJPA implements EmprunteurRepository {
     private EntityManagerFactory entityManagerFactory =
-            Persistence.createEntityManagerFactory("orders.pu");
+            Persistence.createEntityManagerFactory("libraryH2"); //Nom de la base de données
 
     @Override
     public void emprunter(Emprunteur emprunteur, Document doc) {
@@ -141,7 +141,6 @@ public class EmprunteurRepositoryJPA implements EmprunteurRepository {
             em.getTransaction().commit();
             System.out.println("Retour effectué avec succès par " + emprunteur.getNom());
         }
-
         catch(Exception e){
             throw new RuntimeException(e);
         }

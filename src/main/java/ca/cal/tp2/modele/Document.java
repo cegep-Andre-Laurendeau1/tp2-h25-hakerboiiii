@@ -25,12 +25,18 @@ public abstract class Document {
     @Column(nullable = false)
     private int nbExemplaires;
 
+    @Column()
+    private int annee;
 
 
-    public Document(String titre, int nbExemplaires) {
+
+    public Document(String titre, int nbExemplaires, int annee) {
         this.titre = titre;
         this.nbExemplaires = nbExemplaires;
+        this.annee = annee;
     }
+
+
     public abstract String getSql();
     public abstract Long nbSemaines();
 }

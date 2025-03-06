@@ -14,8 +14,8 @@ public class Livre extends Document{
     private String auteur, editeur;
     private int nbPages;
 
-    public Livre(String titre, int nbExemplaires, String isbn, String auteur, String editeur, int nbPages) {
-        super(titre, nbExemplaires);
+    public Livre(String titre, int nbExemplaires, int annee, String isbn, String auteur, String editeur, int nbPages) {
+        super(titre, nbExemplaires, annee);
         this.isbn = isbn;
         this.auteur = auteur;
         this.editeur = editeur;

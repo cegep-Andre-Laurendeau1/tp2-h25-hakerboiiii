@@ -10,7 +10,7 @@ import jakarta.persistence.TypedQuery;
 
 public class UtilisateurRepositoryJPA implements UtilisateurRepository {
     private EntityManagerFactory entiteManagerFactory =
-            Persistence.createEntityManagerFactory("orders.pu");
+            Persistence.createEntityManagerFactory("libraryH2");
 
     @Override
     public void save(Utilisateur user) throws DatabaseException {

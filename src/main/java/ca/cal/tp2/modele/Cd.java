@@ -13,8 +13,8 @@ public class Cd extends Document {
     private String artiste,genre;
     private int duree;
 
-    public Cd(String titre, int nbExemplaires, String artiste, int duree, String genre) {
-        super(titre, nbExemplaires);
+    public Cd(String titre, int nbExemplaires, int annee,String artiste, int duree, String genre) {
+        super(titre, nbExemplaires, annee);
         this.artiste = artiste;
         this.duree = duree;
         this.genre = genre;

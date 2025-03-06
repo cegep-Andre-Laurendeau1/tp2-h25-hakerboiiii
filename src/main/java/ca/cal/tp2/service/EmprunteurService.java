@@ -15,9 +15,9 @@ public class EmprunteurService {
     public void emprunter(Emprunteur emp, Document doc) throws DatabaseException {
         emprunteurRepository.emprunter(emp, doc);
     }
-
     public void retourneDocument(Emprunteur emp, Document doc){
 
         emprunteurRepository.retourneDocument(emp, doc);
     }
+
 }

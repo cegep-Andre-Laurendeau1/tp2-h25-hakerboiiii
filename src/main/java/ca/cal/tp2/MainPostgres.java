@@ -12,15 +12,15 @@ public class MainPostgres {
         // Votre script qui utilise votre API ici
         //Création des modèles
 
-        Livre livre = new Livre("Harry Potter", 12, "sadasdas",
+        Livre livre = new Livre("Harry Potter", 12, 2002, "sadasdas",
                 "J.K. Rowling", "LePage", 1997);
-        Livre roman = new Livre("La bete humaine", 1, "isbn",
+        Livre roman = new Livre("La bete humaine", 1, 1888, "isbn",
                 "Émile Zola", "France", 500);
 
 
-        Cd cd = new Cd("Thriller", 5, "Michael Jackson",
+        Cd cd = new Cd("Thriller", 5, 1996, "Michael Jackson",
                     60, "Pop");
-        Dvd dvd = new Dvd("Le seigneur des anneaux", 3,
+        Dvd dvd = new Dvd("Le seigneur des anneaux", 3, 2001,
                     "Peter Jackson", 180, "PG-13");
 
         Emprunteur thomas = new Emprunteur("toto", "toto@gmail.com", "514-123-4567");
@@ -61,11 +61,11 @@ public class MainPostgres {
         //preposeService.entreNouveauDocument(roman);
         emprunteurService.retourneDocument(thomas, roman);
 
-        try {
-            System.out.println(preposeService.rechercherDocument("Le seigneur des anneaux"));
-        } catch (DatabaseException e) {
-            System.out.println("Erreur bd: " + e.getMessage());
-        }
+//        try {
+//            //System.out.println(preposeService.rechercherDocument("Le seigneur des anneaux"));
+//        } catch (DatabaseException e) {
+//            System.out.println("Erreur bd: " + e.getMessage());
+//        }
 
 
         try{
