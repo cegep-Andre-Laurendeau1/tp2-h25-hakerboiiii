@@ -67,12 +67,11 @@ public class MainH2 {
                     preposeService.rechercherDocument(null, null, null, "Jackson");
             documents.forEach(System.out::println);
 
-//            emprunteurService.emprunter(alice, livre);
-//            emprunteurService.emprunter(alice, bete_humaine);
-//            emprunteurService.emprunter(alice, germinal);
-//
-//            emprunteurService.emprunter(thomas, cd);
-//
+            emprunteurService.emprunter(alice, livre);
+            emprunteurService.emprunter(alice, bete_humaine);
+            emprunteurService.emprunter(alice, germinal);
+            emprunteurService.emprunter(thomas, cd);
+
 //
 //            List<EmpruntDetail> emprunts = emprunteurService.retournerListeEmprunts(alice);
 //
@@ -95,6 +94,9 @@ public class MainH2 {
 //                System.out.println("-----------------------------------------------------");
 //            }
             //emprunteurService.emprunter(thomas, bete_humaine); //Erreur: plus d'exemplaires
+
+            emprunteurService.retourneDocument(alice, livre);
+            emprunteurService.retourneDocument(alice, bete_humaine);
 
 
 

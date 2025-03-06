@@ -39,7 +39,5 @@ public class Emprunt {
 
     }
 
-    public int getId_emprunteur() {
-        return id_emprunt;
-    }
+
 }

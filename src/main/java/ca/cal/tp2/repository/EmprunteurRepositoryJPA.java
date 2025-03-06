@@ -19,53 +19,29 @@ public class EmprunteurRepositoryJPA implements EmprunteurRepository {
     public void emprunter(Emprunteur emprunteur, Document doc) {
         try(EntityManager em = entityManagerFactory.createEntityManager()){
             em.getTransaction().begin();
-
-            TypedQuery<Emprunteur> query = em.createQuery(
-                    "SELECT u FROM Utilisateur u WHERE u.email = :email AND TYPE(u) = Emprunteur ", Emprunteur.class);
-            query.setParameter("email", emprunteur.getEmail());
-            List<Emprunteur> emprunteurs = query.getResultList();
-
-            if(!emprunteurs.isEmpty())
-                emprunteur = emprunteurs.getFirst();
-            else{
-                em.persist(emprunteur);
-                em.flush();
-            }
-
-            //Doit implémenter cela, car sinon la base de donnée persiste le même enregistrement
-            // à chaque fois qu'on emprunte un document.
-            TypedQuery<Document> documentQuery = em.createQuery(
-                    "SELECT d FROM Document d WHERE d.titre = :titre", Document.class);
-            documentQuery.setParameter("titre", doc.getTitre());
-            List<Document> documents = documentQuery.getResultList();
-
-            if(!documents.isEmpty()){
-                doc = documents.getFirst();
-            }
-            else{
-                em.persist(doc);
-                em.flush();
-            }
+            emprunteur = getEmprunteur(em, emprunteur.getEmail());
+            doc = getDocument(em, doc.getTitre());
 
             if(doc.getNbExemplaires() <= 0) {
                 throw new RuntimeException("Il n'y a plus d'exemplaires disponibles pour le document :  " +
                         doc.getTitre());
             }
 
-            Emprunt emprunt = new Emprunt(emprunteur);
-            em.persist(emprunt);
+            TypedQuery<Emprunt> empruntQuery = em.createQuery(
+                    "SELECT e FROM Emprunt e WHERE e.emprunteur = :emprunteur" +
+                            " AND e.statuts =  'Emprunte'", Emprunt.class);
+            empruntQuery.setParameter("emprunteur", emprunteur);
+            List<Emprunt> empruntsExistants = empruntQuery.getResultList();
+            Emprunt emprunt = empruntsExistants.isEmpty() ? new Emprunt(emprunteur) : empruntsExistants.getFirst();
+            if(empruntsExistants.isEmpty()){
+                em.persist(emprunt);
+            }
 
             EmpruntDetail empruntDetail = new EmpruntDetail(emprunt, doc);
             em.persist(empruntDetail);
 
             doc.setNbExemplaires(doc.getNbExemplaires() - 1);
-
-            em.createQuery(
-                    " UPDATE Document d SET d.nbExemplaires = :newValue WHERE d.id_document = :id")
-                            .setParameter("newValue", doc.getNbExemplaires())
-                            .setParameter("id", doc.getId_document())
-                            .executeUpdate();
-
+            em.merge(doc);
 
             em.getTransaction().commit();
 
@@ -81,54 +57,19 @@ public class EmprunteurRepositoryJPA implements EmprunteurRepository {
     public void retourneDocument(Emprunteur emprunteur, Document doc) {
         try(EntityManager em = entityManagerFactory.createEntityManager()){
             em.getTransaction().begin();
+            emprunteur = getEmprunteur(em, emprunteur.getEmail());
+            doc = getDocument(em, doc.getTitre());
 
-
-            TypedQuery<Emprunteur> queryEmp = em.createQuery(
-                    "SELECT u FROM Utilisateur u WHERE u.email = :email " +
-                            " AND TYPE(u) = Emprunteur ", Emprunteur.class);
-            queryEmp.setParameter("email", emprunteur.getEmail());
-            List<Emprunteur> emprunteurs = queryEmp.getResultList();
-
-            if(!emprunteurs.isEmpty()){
-                emprunteur = emprunteurs.getFirst();
-            }
-            else{
-                throw new RuntimeException("L'emprunteur n'existe pas dans la base de données");
-            }
-
-            TypedQuery<Document> queryDoc = em.createQuery(
-                    "SELECT d FROM Document d WHERE d.titre = :titre", Document.class);
-            queryDoc.setParameter("titre", doc.getTitre());
-            List<Document> documents = queryDoc.getResultList();
-            if(!documents.isEmpty()){
-                doc = documents.getFirst();
-            }
-            else{
-                throw new RuntimeException("Le document n'existe pas dans la base de données");
-            }
-
-
-            TypedQuery<EmpruntDetail> query = em.createQuery(
-                    "SELECT ed FROM EmpruntDetail ed WHERE ed.emprunt.emprunteur = :emprunteur" +
-                            " AND ed.document = :doc AND ed.status = 'Emprunte'", EmpruntDetail.class);
-            query.setParameter("emprunteur", emprunteur);
-            query.setParameter("doc", doc);
-            List<EmpruntDetail> empruntDetails = query.getResultList();
-
-            if(empruntDetails.isEmpty()){
+            EmpruntDetail empruntDetail = getEmpruntDetails(em, emprunteur, doc);
+            if(empruntDetail == null){
                 throw new RuntimeException("L'emprunteur n'a pas emprunté ce document");
             }
-            EmpruntDetail empruntDetail = empruntDetails.getFirst();
             empruntDetail.setDateRetourActuelle(LocalDate.now());
             empruntDetail.updateStatus();
             em.merge(empruntDetail);
 
             doc.setNbExemplaires(doc.getNbExemplaires() + 1);
-            em.createQuery(
-                    "UPDATE Document d SET d.nbExemplaires = :newvalue WHERE d.id_document = :id")
-                    .setParameter("newvalue", doc.getNbExemplaires())
-                    .setParameter("id", doc.getId_document())
-                    .executeUpdate();
+            em.merge(doc);
 
 
             if(empruntDetail.isEnRetard()){
@@ -158,5 +99,39 @@ public class EmprunteurRepositoryJPA implements EmprunteurRepository {
             query.setParameter("email", emp.getEmail());
             return query.getResultList();
         }
+    }
+
+    private Emprunteur getEmprunteur(EntityManager em, String courriel){
+        TypedQuery<Emprunteur> query = em.createQuery(
+                "SELECT u FROM Utilisateur u WHERE u.email = :email AND TYPE(u) = Emprunteur ", Emprunteur.class);
+        query.setParameter("email", courriel);
+        List<Emprunteur> emprunteurs = query.getResultList();
+
+        if(emprunteurs.isEmpty())
+            throw new RuntimeException("L'emprunteur n'existe pas dans la base de données");
+        else
+            return emprunteurs.getFirst();
+
+    }
+
+    private Document getDocument(EntityManager em, String titre){
+        TypedQuery<Document> query = em.createQuery(
+                "SELECT d FROM Document d WHERE d.titre = :titre", Document.class);
+        query.setParameter("titre", titre);
+        List<Document> documents = query.getResultList();
+
+        if(documents.isEmpty())
+            throw new RuntimeException("Le document n'existe pas dans la base de données");
+        else
+            return documents.getFirst();
+    }
+    private EmpruntDetail getEmpruntDetails(EntityManager em, Emprunteur emp, Document doc){
+        TypedQuery<EmpruntDetail> query = em.createQuery(
+                "SELECT ed FROM EmpruntDetail ed WHERE ed.emprunt.emprunteur = :emprunteur" +
+                        " AND ed.document = :doc AND ed.status = 'Emprunte'", EmpruntDetail.class);
+        query.setParameter("emprunteur", emp);
+        query.setParameter("doc", doc);
+        List<EmpruntDetail> empruntDetails = query.getResultList();
+        return empruntDetails.isEmpty() ? null : empruntDetails.getFirst();
     }
 }
