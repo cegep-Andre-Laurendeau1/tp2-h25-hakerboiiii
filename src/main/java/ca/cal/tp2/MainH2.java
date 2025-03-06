@@ -98,6 +98,7 @@ public class MainH2 {
             emprunteurService.retourneDocument(alice, bete_humaine);
             tester.testRetounerEnRetard();
             emprunteurService.retourneDocument(thomas, cd);
+            emprunteurService.payerAmende(thomas, 8.25);
 
 
 

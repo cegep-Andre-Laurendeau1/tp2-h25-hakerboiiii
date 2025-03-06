@@ -101,6 +101,33 @@ public class EmprunteurRepositoryJPA implements EmprunteurRepository {
         }
     }
 
+    @Override
+    public void payerAmende(Emprunteur emp, double montant){
+        try(EntityManager em = entityManagerFactory.createEntityManager()){
+            em.getTransaction().begin();
+            TypedQuery<Amende> query = em.createQuery(
+                    "SELECT a FROM Amende a WHERE a.emprunteur = :emprunteur " +
+                            "AND a.statut = false", Amende.class);
+            query.setParameter("emprunteur", emp);
+            List<Amende> amendeList = query.getResultList();
+
+            if(amendeList.isEmpty()){
+                throw new RuntimeException("L'emprunteur n'a pas d'amende à payer");
+            }
+
+            Amende amende = amendeList.getFirst();
+            if(montant < amende.getMontant()){
+                throw new RuntimeException("Montant insuffisant. Le montant de l'amende est " +
+                        amende.getMontant() + "$. Il vous manque " + (amende.getMontant() - montant) + "$");
+            }
+            amende.setMontant(amende.getMontant() - montant);
+            amende.setStatut(true);
+            em.merge(amende);
+            em.getTransaction().commit();
+            System.out.println("Le paiement a été fait succesivement par " + emp.getNom());
+        }
+    }
+
     private Emprunteur getEmprunteur(EntityManager em, String courriel){
         TypedQuery<Emprunteur> query = em.createQuery(
                 "SELECT u FROM Utilisateur u WHERE u.email = :email AND TYPE(u) = Emprunteur ", Emprunteur.class);

@@ -37,17 +37,5 @@ public class Amende {
         statut = false;
     }
 
-    public void calculMontant(int nb_jours_retard){
-        this.montant = nb_jours_retard * 0.25;
-    }
 
-
-    public void updateStatus(){
-        this.statut = true;
-    }
-
-
-    public int getId_emprunteur() {
-        return 0;
-    }
 }

@@ -10,5 +10,7 @@ import java.util.List;
 public interface EmprunteurRepository {
     void emprunter(Emprunteur emp, Document doc) throws DatabaseException;
     void retourneDocument(Emprunteur emp, Document doc);
-    public List<EmpruntDetail> chercherListeEmprunts(Emprunteur emp);
+    List<EmpruntDetail> chercherListeEmprunts(Emprunteur emp);
+    void payerAmende(Emprunteur emp, double montant);
+
 }

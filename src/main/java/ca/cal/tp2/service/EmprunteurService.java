@@ -27,6 +27,10 @@ public class EmprunteurService {
         return emprunteurRepository.chercherListeEmprunts(emp);
     }
 
+    public void payerAmende(Emprunteur emp, Double montant) {
+        emprunteurRepository.payerAmende(emp, montant);
+    }
+
 
 
 }
