@@ -49,50 +49,58 @@ public class PreposeRepositoryJPA implements PreposeRepository {
     @Override
     public List<DocumentDTO> findDocument(String titre, String auteur, Integer annee, String artiste) throws DatabaseException {
         try(EntityManager em = entityManagerFactory.createEntityManager()){
-            StringBuilder queryString = new StringBuilder("SELECT d FROM Document d WHERE 1=1");
-            if(titre != null && !titre.isEmpty())
-                queryString.append(" AND LOWER(d.titre) LIKE LOWER(:titre)");
-            if(auteur != null && !auteur.isEmpty())
-                queryString.append(" AND TYPE (d) = :classType AND LOWER(d.auteur) LIKE LOWER   (:auteur)");
-            if(annee != null)
-                queryString.append(" AND d.annee = :annee");
-            if(artiste != null && !artiste.isEmpty())
-                queryString.append(" AND TYPE (d) IN (:cdClass, :dvdClass) AND LOWER(d.artiste) LIKE LOWER(:artiste)");
-
-            TypedQuery<Document> query = em.createQuery(queryString.toString(), Document.class);
-
-            if(titre != null && !titre.isEmpty())
-                query.setParameter("titre", "%" + titre + "%");
-            if(auteur != null && !auteur.isEmpty()){
-                query.setParameter("classType", Livre.class);
-                query.setParameter("auteur", "%" + auteur + "%");
-            }
-            if(annee != null)
-                query.setParameter("annee", annee);
-            if(artiste != null && !artiste.isEmpty()){
-                query.setParameter("cdClass", Cd.class);
-                query.setParameter("dvdClass", Dvd.class);
-                query.setParameter("artiste", "%" + artiste + "%");
-
-            }
+            TypedQuery<Document> query = buildQuery(em, titre, auteur, annee, artiste);
             List<Document> resultats = query.getResultList();
-
-            return resultats.stream()
-                    .map(doc -> switch (doc) {
-                        case Livre livre ->
-                                new DocumentDTO(doc.getTitre(), livre.getAuteur(), null, doc.getAnnee());
-                        case Cd cd ->
-                                new DocumentDTO(doc.getTitre(), null, cd.getArtiste(), doc.getAnnee());
-                        case Dvd dvd ->
-                                new DocumentDTO(doc.getTitre(), null, dvd.getDirector(), doc.getAnnee());
-                        case null, default -> null;
-                    })
-                    .collect(Collectors.toList());
-
+            return convertToDTO(resultats);
         }
         catch(Exception e) {
             throw new DatabaseException(e);
         }
+    }
+
+    private TypedQuery<Document> buildQuery(EntityManager em, String titre,
+                                            String auteur, Integer annee, String artiste){
+        StringBuilder queryString = new StringBuilder("SELECT d FROM Document d WHERE 1=1");
+
+        if(titre != null && !titre.isEmpty())
+            queryString.append(" AND LOWER(d.titre) LIKE LOWER(:titre)");
+        if(auteur != null && !auteur.isEmpty())
+            queryString.append(" AND TYPE (d) = :classType AND LOWER(d.auteur) LIKE LOWER   (:auteur)");
+        if(annee != null)
+            queryString.append(" AND d.annee = :annee");
+        if(artiste != null && !artiste.isEmpty())
+            queryString.append(" AND TYPE (d) IN (:cdClass, :dvdClass) AND LOWER(d.artiste) LIKE LOWER(:artiste)");
+
+        TypedQuery<Document> query = em.createQuery(queryString.toString(), Document.class);
+        if(titre != null && !titre.isEmpty())
+            query.setParameter("titre", "%" + titre + "%");
+        if(auteur != null && !auteur.isEmpty()){
+            query.setParameter("classType", Livre.class);
+            query.setParameter("auteur", "%" + auteur + "%");
+        }
+        if(annee != null)
+            query.setParameter("annee", annee);
+        if(artiste != null && !artiste.isEmpty()){
+            query.setParameter("cdClass", Cd.class);
+            query.setParameter("dvdClass", Dvd.class);
+            query.setParameter("artiste", "%" + artiste + "%");
+
+        }
+        return query;
+    }
+
+    private List<DocumentDTO> convertToDTO(List<Document> resultats){
+        return resultats.stream()
+                .map(doc -> switch (doc) {
+                    case Livre livre ->
+                            new DocumentDTO(doc.getTitre(), livre.getAuteur(), null, doc.getAnnee());
+                    case Cd cd ->
+                            new DocumentDTO(doc.getTitre(), null, cd.getArtiste(), doc.getAnnee());
+                    case Dvd dvd ->
+                            new DocumentDTO(doc.getTitre(), null, dvd.getDirector(), doc.getAnnee());
+                    case null, default -> null;
+                })
+                .collect(Collectors.toList());
     }
 
 }

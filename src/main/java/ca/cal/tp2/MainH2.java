@@ -64,36 +64,36 @@ public class MainH2 {
             preposeService.entreNouveauDocument(dvd);
 
             List<DocumentDTO> documents =
-                    preposeService.rechercherDocument("Potter", null, null, null);
+                    preposeService.rechercherDocument(null, null, null, "Jackson");
             documents.forEach(System.out::println);
 
-            emprunteurService.emprunter(alice, livre);
-            emprunteurService.emprunter(alice, bete_humaine);
-            emprunteurService.emprunter(alice, germinal);
-
-            emprunteurService.emprunter(thomas, cd);
-
-
-            List<EmpruntDetail> emprunts = emprunteurService.retournerListeEmprunts(alice);
-
-            System.out.println("Liste des emprunts de : " + alice.getNom() + "(" + alice.getEmail() + ")");
-
-            if(emprunts.isEmpty()){
-                System.out.println("Aucun empprunt");
-            }
-            else {
-                System.out.println("-----------------------------------------------------");
-                System.out.printf("%-30s | %-12s | %-12s\n", "Titre du document", "Date Emprunt",
-                        "Jour de retour");
-                System.out.println("-----------------------------------------------------");
-                for (EmpruntDetail empruntDetail : emprunts) {
-                    System.out.printf("%-30s | %-12s | %-12s\n",
-                            empruntDetail.getDocument().getTitre(),
-                            empruntDetail.getEmprunt().getDate_emprunt(),
-                            empruntDetail.getDateRetourPrevue());
-                }
-                System.out.println("-----------------------------------------------------");
-            }
+//            emprunteurService.emprunter(alice, livre);
+//            emprunteurService.emprunter(alice, bete_humaine);
+//            emprunteurService.emprunter(alice, germinal);
+//
+//            emprunteurService.emprunter(thomas, cd);
+//
+//
+//            List<EmpruntDetail> emprunts = emprunteurService.retournerListeEmprunts(alice);
+//
+//            System.out.println("Liste des emprunts de : " + alice.getNom() + "(" + alice.getEmail() + ")");
+//
+//            if(emprunts.isEmpty()){
+//                System.out.println("Aucun empprunt");
+//            }
+//            else {
+//                System.out.println("-----------------------------------------------------");
+//                System.out.printf("%-30s | %-12s | %-12s\n", "Titre du document", "Date Emprunt",
+//                        "Jour de retour");
+//                System.out.println("-----------------------------------------------------");
+//                for (EmpruntDetail empruntDetail : emprunts) {
+//                    System.out.printf("%-30s | %-12s | %-12s\n",
+//                            empruntDetail.getDocument().getTitre(),
+//                            empruntDetail.getEmprunt().getDate_emprunt(),
+//                            empruntDetail.getDateRetourPrevue());
+//                }
+//                System.out.println("-----------------------------------------------------");
+//            }
             //emprunteurService.emprunter(thomas, bete_humaine); //Erreur: plus d'exemplaires
 
 

@@ -82,7 +82,7 @@ public class EmprunteurRepositoryJPA implements EmprunteurRepository {
         try(EntityManager em = entityManagerFactory.createEntityManager()){
             em.getTransaction().begin();
 
-            //Assure que l'emprunteur existe dans la base de données. Sinon, je risque une exception.+-
+
             TypedQuery<Emprunteur> queryEmp = em.createQuery(
                     "SELECT u FROM Utilisateur u WHERE u.email = :email " +
                             " AND TYPE(u) = Emprunteur ", Emprunteur.class);
