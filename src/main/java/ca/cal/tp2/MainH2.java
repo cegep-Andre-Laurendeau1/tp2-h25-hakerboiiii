@@ -103,9 +103,9 @@ public class MainH2 {
 
             //Tester pour les emprunts retardataires.
             //Il faut décommenter les lignes suivantes pour tester les emprunts retardataires
-            tester.testRetounerEnRetard();
-            emprunteurService.retourneDocument(thomas, cd);
-//            emprunteurService.payerAmende(thomas, 8.0);
+//            tester.testRetounerEnRetard();
+//            emprunteurService.retourneDocument(thomas, cd);
+//            emprunteurService.payerAmende(thomas, 8.0); //Attention: L'amende peut varier selon le temps.
 
 
 
