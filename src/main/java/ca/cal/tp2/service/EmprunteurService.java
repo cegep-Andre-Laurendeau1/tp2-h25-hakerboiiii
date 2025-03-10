@@ -18,7 +18,7 @@ public class EmprunteurService {
     public void emprunter(Emprunteur emp, Document doc) throws DatabaseException {
         emprunteurRepository.emprunter(emp, doc);
     }
-    public void retourneDocument(Emprunteur emp, Document doc){
+    public void retourneDocument(Emprunteur emp, Document doc) throws DatabaseException {
 
         emprunteurRepository.retourneDocument(emp, doc);
     }
@@ -27,7 +27,7 @@ public class EmprunteurService {
         return emprunteurRepository.chercherListeEmprunts(emp);
     }
 
-    public void payerAmende(Emprunteur emp, Double montant) {
+    public void payerAmende(Emprunteur emp, Double montant) throws DatabaseException {
         emprunteurRepository.payerAmende(emp, montant);
     }
 

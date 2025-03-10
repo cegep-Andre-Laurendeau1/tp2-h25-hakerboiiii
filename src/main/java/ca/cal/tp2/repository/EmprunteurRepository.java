@@ -9,8 +9,8 @@ import java.util.List;
 
 public interface EmprunteurRepository {
     void emprunter(Emprunteur emp, Document doc) throws DatabaseException;
-    void retourneDocument(Emprunteur emp, Document doc);
+    void retourneDocument(Emprunteur emp, Document doc) throws DatabaseException;
     List<EmpruntDetail> chercherListeEmprunts(Emprunteur emp);
-    void payerAmende(Emprunteur emp, double montant);
+    void payerAmende(Emprunteur emp, double montant) throws DatabaseException;
 
 }

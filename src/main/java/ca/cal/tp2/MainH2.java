@@ -96,9 +96,16 @@ public class MainH2 {
 
             emprunteurService.retourneDocument(alice, livre);
             emprunteurService.retourneDocument(alice, bete_humaine);
+            //emprunteurService.retourneDocument(thomas, dvd); //Erreur: document non emprunte.
+
+
+
+
+            //Tester pour les emprunts retardataires.
+            //Il faut décommenter les lignes suivantes pour tester les emprunts retardataires
             tester.testRetounerEnRetard();
             emprunteurService.retourneDocument(thomas, cd);
-            emprunteurService.payerAmende(thomas, 8.25);
+//            emprunteurService.payerAmende(thomas, 8.0);
 
 
 

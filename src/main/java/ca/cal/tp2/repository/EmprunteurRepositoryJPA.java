@@ -7,16 +7,15 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import jakarta.persistence.TypedQuery;
 
-import java.lang.reflect.Type;
 import java.time.LocalDate;
 import java.util.List;
 
 public class EmprunteurRepositoryJPA implements EmprunteurRepository {
-    private EntityManagerFactory entityManagerFactory =
+    private final EntityManagerFactory entityManagerFactory =
             Persistence.createEntityManagerFactory("libraryH2"); //Nom de la base de données
 
     @Override
-    public void emprunter(Emprunteur emprunteur, Document doc) {
+    public void emprunter(Emprunteur emprunteur, Document doc) throws DatabaseException {
         try(EntityManager em = entityManagerFactory.createEntityManager()){
             em.getTransaction().begin();
             emprunteur = getEmprunteur(em, emprunteur.getEmail());
@@ -27,15 +26,7 @@ public class EmprunteurRepositoryJPA implements EmprunteurRepository {
                         doc.getTitre());
             }
 
-            TypedQuery<Emprunt> empruntQuery = em.createQuery(
-                    "SELECT e FROM Emprunt e WHERE e.emprunteur = :emprunteur" +
-                            " AND e.statuts =  'Emprunte'", Emprunt.class);
-            empruntQuery.setParameter("emprunteur", emprunteur);
-            List<Emprunt> empruntsExistants = empruntQuery.getResultList();
-            Emprunt emprunt = empruntsExistants.isEmpty() ? new Emprunt(emprunteur) : empruntsExistants.getFirst();
-            if(empruntsExistants.isEmpty()){
-                em.persist(emprunt);
-            }
+            Emprunt emprunt = getEmprunt(em, emprunteur);
 
             EmpruntDetail empruntDetail = new EmpruntDetail(emprunt, doc);
             em.persist(empruntDetail);
@@ -49,12 +40,12 @@ public class EmprunteurRepositoryJPA implements EmprunteurRepository {
         }
 
         catch(Exception e){
-            throw new RuntimeException(e);
+            throw new DatabaseException(e);
         }
     }
 
     @Override
-    public void retourneDocument(Emprunteur emprunteur, Document doc) {
+    public void retourneDocument(Emprunteur emprunteur, Document doc) throws DatabaseException {
         try(EntityManager em = entityManagerFactory.createEntityManager()){
             em.getTransaction().begin();
             emprunteur = getEmprunteur(em, emprunteur.getEmail());
@@ -73,17 +64,13 @@ public class EmprunteurRepositoryJPA implements EmprunteurRepository {
 
 
             if(empruntDetail.isEnRetard()){
-                double montant = empruntDetail.calculAmende();
-                Amende amende = new Amende(emprunteur, montant);
-                em.persist(amende);
-                System.out.println("Amende de " + montant + "$ a été ajoutée à l'emprunteur " + emprunteur.getNom());
+                isAmende(em, empruntDetail, emprunteur);
             }
-
             em.getTransaction().commit();
             System.out.println("Retour effectué avec succès par " + emprunteur.getNom());
         }
         catch(Exception e){
-            throw new RuntimeException(e);
+            throw new DatabaseException(e);
         }
     }
 
@@ -102,7 +89,7 @@ public class EmprunteurRepositoryJPA implements EmprunteurRepository {
     }
 
     @Override
-    public void payerAmende(Emprunteur emp, double montant){
+    public void payerAmende(Emprunteur emp, double montant) throws DatabaseException {
         try(EntityManager em = entityManagerFactory.createEntityManager()){
             em.getTransaction().begin();
             TypedQuery<Amende> query = em.createQuery(
@@ -126,6 +113,10 @@ public class EmprunteurRepositoryJPA implements EmprunteurRepository {
             em.getTransaction().commit();
             System.out.println("Le paiement a été fait succesivement par " + emp.getNom());
         }
+
+        catch (Exception e){
+            throw new DatabaseException(e);
+        }
     }
 
     private Emprunteur getEmprunteur(EntityManager em, String courriel){
@@ -141,6 +132,24 @@ public class EmprunteurRepositoryJPA implements EmprunteurRepository {
 
     }
 
+    private Emprunt getEmprunt(EntityManager em, Emprunteur emprunteur){
+        Emprunt emp;
+        TypedQuery<Emprunt> empruntQuery = em.createQuery(
+                "SELECT e FROM Emprunt e WHERE e.emprunteur = :emprunteur" +
+                        " AND e.statuts =  'Emprunte'", Emprunt.class);
+        empruntQuery.setParameter("emprunteur", emprunteur);
+        List<Emprunt> empruntsExistants = empruntQuery.getResultList();
+
+        if(empruntsExistants.isEmpty()){
+            emp = new Emprunt(emprunteur);
+            em.persist(emp);
+        }
+        else{
+            emp = empruntsExistants.getFirst();
+        }
+        return emp;
+    }
+
     private Document getDocument(EntityManager em, String titre){
         TypedQuery<Document> query = em.createQuery(
                 "SELECT d FROM Document d WHERE d.titre = :titre", Document.class);
@@ -152,6 +161,8 @@ public class EmprunteurRepositoryJPA implements EmprunteurRepository {
         else
             return documents.getFirst();
     }
+
+
     private EmpruntDetail getEmpruntDetails(EntityManager em, Emprunteur emp, Document doc){
         TypedQuery<EmpruntDetail> query = em.createQuery(
                 "SELECT ed FROM EmpruntDetail ed WHERE ed.emprunt.emprunteur = :emprunteur" +
@@ -161,6 +172,14 @@ public class EmprunteurRepositoryJPA implements EmprunteurRepository {
         List<EmpruntDetail> empruntDetails = query.getResultList();
         return empruntDetails.isEmpty() ? null : empruntDetails.getFirst();
     }
+
+    private void isAmende(EntityManager em, EmpruntDetail empruntDetail, Emprunteur emprunteur){
+        double montant = empruntDetail.calculAmende();
+        Amende amende = new Amende(emprunteur, montant);
+        em.persist(amende);
+        System.out.println("Amende de " + montant + "$ a été ajoutée à l'emprunteur " + emprunteur.getNom());
+    }
+
 
     //Méthode qui hardcode et modifie la date de retour prévue d'un emprunt pour tester
     // les cas de retours qui sont en retard.
