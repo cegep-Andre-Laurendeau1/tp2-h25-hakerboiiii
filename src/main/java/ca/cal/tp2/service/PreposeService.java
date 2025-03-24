@@ -8,6 +8,7 @@ import ca.cal.tp2.service.dto.DocumentDTO;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -37,7 +38,54 @@ public class PreposeService {
     }
 
     public List<DocumentDTO> rechercherDocument(String titre, String auteur, Integer annee, String artiste) throws DatabaseException{
-        return preposeRepository.findDocument(titre, auteur, annee, artiste);
+
+        QueryBuilderResult queryBuilderResult = queryBuilder(titre, auteur, annee, artiste);
+        List<Document> documents =
+                preposeRepository.findDocument(
+                        queryBuilderResult.jpql,
+                        queryBuilderResult.parameters);
+
+        return convertToDTO(documents);
+
+    }
+
+    private List<DocumentDTO> convertToDTO(List<Document> resultats){
+        return resultats.stream()
+                .map(doc -> switch (doc) {
+                    case Livre livre ->
+                            new DocumentDTO(doc.getTitre(), livre.getAuteur(), null, doc.getDatePublication());
+                    case Cd cd ->
+                            new DocumentDTO(doc.getTitre(), null, cd.getArtiste(), doc.getDatePublication());
+                    case Dvd dvd ->
+                            new DocumentDTO(doc.getTitre(), null, dvd.getDirector(), doc.getDatePublication());
+                    case null, default -> null;
+                })
+                .collect(Collectors.toList());
+    }
+
+    private QueryBuilderResult queryBuilder(String titre, String auteur, Integer annee, String artiste){
+        StringBuilder jpql = new StringBuilder("SELECT d FROM Document d WHERE 1=1");
+        Map<String, Object> parameters = Map.of();
+
+        if(titre != null && !titre.isEmpty()){
+            jpql.append(" AND LOWER(d.titre) LIKE LOWER(:titre)");
+            parameters = Map.of("titre", "%" + titre + "%");
+        }
+        if(auteur != null && !auteur.isEmpty()){
+            jpql.append(" AND TYPE (d) = :classType AND LOWER(d.auteur) LIKE LOWER(:auteur)");
+            parameters = Map.of("classType", Livre.class, "auteur", "%" + auteur + "%");
+        }
+        if(annee != null){
+            jpql.append(" AND d.annee = :annee");
+            parameters = Map.of("annee", annee);
+        }
+        if(artiste != null && !artiste.isEmpty()) {
+            jpql.append(" AND TYPE (d) IN (:cdClass, :dvdClass) AND LOWER(d.artiste) LIKE LOWER(:artiste)");
+            parameters = Map.of("cdClass", Cd.class, "dvdClass", Dvd.class, "artiste", "%" + artiste + "%");
+
+        }
+
+        return new QueryBuilderResult(jpql.toString(), parameters);
     }
 
     private void documentCree(String titre, int nbExemplaires, Supplier<Document> documentSupplier)
@@ -52,5 +100,5 @@ public class PreposeService {
             preposeRepository.saveDocument(document);
         }
     }
-
+    private record QueryBuilderResult(String jpql, Map<String, Object> parameters) {}
 }

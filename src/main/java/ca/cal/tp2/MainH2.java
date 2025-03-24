@@ -40,19 +40,23 @@ public class MainH2 {
                     "Émile Zola", "France", 500, 1);
 
 
-            //preposeService.entreNouveauDocument(germinal_duplique); //est mise a jour. Donc, 5 exemplaires.
+            preposeService.creeLivre("Germinal", LocalDate.of(1884, 1, 1), "isbn",
+                    "Émile Zola", "France", 500, 1); //est mise a jour. Donc, 2 exemplaires.
 
 
             preposeService.creeCd("Thriller", LocalDate.of(1995, 1, 1), 5, "Michael Jackson",
                     60, "Pop");
+
+            preposeService.creeCd("Zombies", LocalDate.of(1995, 1, 1), 5, "Michael Jackson",
+                    30, "Pop");
             preposeService.creeDvd("Le seigneur des anneaux", LocalDate.of(2001, 1, 1), 3,
                     "Peter Jackson", 180, "PG-13");
 
 
-//
-//            List<DocumentDTO> documents =
-//                    preposeService.rechercherDocument(null, null, null, "Jackson");
-//            documents.forEach(System.out::println);
+
+            List<DocumentDTO> documents =
+                    preposeService.rechercherDocument(null, "Émile Zola", null, null);
+            documents.forEach(System.out::println);
 //
 //            emprunteurService.emprunter(alice, livre);
 //            emprunteurService.emprunter(alice, bete_humaine);

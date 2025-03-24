@@ -12,6 +12,7 @@ import jakarta.persistence.Persistence;
 import jakarta.persistence.TypedQuery;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -67,13 +68,25 @@ public class PreposeRepositoryJPA implements PreposeRepository {
         }
     }
 
+//    @Override
+//    public List<DocumentDTO> findDocument(String titre, String auteur,
+//                                          Integer annee, String artiste) throws DatabaseException {
+//        try(EntityManager em = entityManagerFactory.createEntityManager()){
+//            TypedQuery<Document> query = buildQuery(em, titre, auteur, annee, artiste);
+//            List<Document> resultats = query.getResultList();
+//            return convertToDTO(resultats);
+//        }
+//        catch(Exception e) {
+//            throw new DatabaseException(e);
+//        }
+//    }
+
     @Override
-    public List<DocumentDTO> findDocument(String titre, String auteur,
-                                          Integer annee, String artiste) throws DatabaseException {
+    public List<Document> findDocument(String jpql, Map<String, Object> params) throws DatabaseException {
         try(EntityManager em = entityManagerFactory.createEntityManager()){
-            TypedQuery<Document> query = buildQuery(em, titre, auteur, annee, artiste);
-            List<Document> resultats = query.getResultList();
-            return convertToDTO(resultats);
+            TypedQuery<Document> query = em.createQuery(jpql, Document.class);
+            params.forEach(query::setParameter);
+            return query.getResultList();
         }
         catch(Exception e) {
             throw new DatabaseException(e);
@@ -124,5 +137,4 @@ public class PreposeRepositoryJPA implements PreposeRepository {
                 })
                 .collect(Collectors.toList());
     }
-
 }
