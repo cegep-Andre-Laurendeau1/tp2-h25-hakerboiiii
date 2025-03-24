@@ -10,4 +10,5 @@ import java.util.List;
 public interface PreposeRepository {
     void saveDocument(Document doc) throws DatabaseException;
     List<DocumentDTO> findDocument(String titre, String auteur, Integer annee, String artiste) throws DatabaseException;
+    Document findDocumentByTitre(String titre) throws DatabaseException;
 }

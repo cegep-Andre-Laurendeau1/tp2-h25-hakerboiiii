@@ -23,27 +23,50 @@ public class PreposeRepositoryJPA implements PreposeRepository {
     public void saveDocument(Document doc) throws DatabaseException {
         try(EntityManager em = entityManagerFactory.createEntityManager()) {
             em.getTransaction().begin();
-            TypedQuery<Document> query = em.createQuery(
-                    "SELECT d FROM Document d WHERE d.titre = :titre", Document.class);
-            query.setParameter("titre", doc.getTitre());
-            List<Document> documentsExistant = query.getResultList();
 
-            if(!documentsExistant.isEmpty()){
-                Document docExistant = documentsExistant.getFirst();
-                docExistant.setNbExemplaires(docExistant.getNbExemplaires() + doc.getNbExemplaires());
-                em.merge(docExistant);
-                System.out.println("Document existant. Mise a jour du nombre d'exemplaires: "
-                        + docExistant.getNbExemplaires());
-            }
-
-            else{
+            if(doc.getId_document() == null){
                 em.persist(doc);
             }
+            else{
+                em.merge(doc);
+            }
+
+//            TypedQuery<Document> query = em.createQuery(
+//                    "SELECT d FROM Document d WHERE d.titre = :titre", Document.class);
+//            query.setParameter("titre", doc.getTitre());
+//            List<Document> documentsExistant = query.getResultList();
+//
+//            if(!documentsExistant.isEmpty()){
+//                Document docExistant = documentsExistant.getFirst();
+//                docExistant.setNbExemplaires(docExistant.getNbExemplaires() + doc.getNbExemplaires());
+//                em.merge(docExistant);
+//                System.out.println("Document existant. Mise a jour du nombre d'exemplaires: "
+//                        + docExistant.getNbExemplaires());
+//            }
+//
+//            else{
+//                em.persist(doc);
+//            }
             em.getTransaction().commit();
         } catch (Exception e) {
             throw new DatabaseException(e);
         }
     }
+
+    @Override
+    public Document findDocumentByTitre(String titre) throws DatabaseException{
+        try(EntityManager em = entityManagerFactory.createEntityManager()){
+            TypedQuery<Document> query = em.createQuery(
+                    "SELECT d FROM Document d WHERE d.titre = :titre", Document.class);
+            query.setParameter("titre", titre);
+            return query.getResultStream().findFirst().orElse(null);
+        }
+
+        catch(Exception e){
+            throw new DatabaseException(e);
+        }
+    }
+
     @Override
     public List<DocumentDTO> findDocument(String titre, String auteur,
                                           Integer annee, String artiste) throws DatabaseException {
@@ -92,11 +115,11 @@ public class PreposeRepositoryJPA implements PreposeRepository {
         return resultats.stream()
                 .map(doc -> switch (doc) {
                     case Livre livre ->
-                            new DocumentDTO(doc.getTitre(), livre.getAuteur(), null, doc.getAnnee());
+                            new DocumentDTO(doc.getTitre(), livre.getAuteur(), null, doc.getDatePublication());
                     case Cd cd ->
-                            new DocumentDTO(doc.getTitre(), null, cd.getArtiste(), doc.getAnnee());
+                            new DocumentDTO(doc.getTitre(), null, cd.getArtiste(), doc.getDatePublication());
                     case Dvd dvd ->
-                            new DocumentDTO(doc.getTitre(), null, dvd.getDirector(), doc.getAnnee());
+                            new DocumentDTO(doc.getTitre(), null, dvd.getDirector(), doc.getDatePublication());
                     case null, default -> null;
                 })
                 .collect(Collectors.toList());

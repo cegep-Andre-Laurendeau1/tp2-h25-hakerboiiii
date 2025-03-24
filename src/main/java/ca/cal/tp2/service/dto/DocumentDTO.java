@@ -2,12 +2,14 @@ package ca.cal.tp2.service.dto;
 
 import lombok.Getter;
 
+import java.time.LocalDate;
+
 @Getter
 public class DocumentDTO{
     private String titre, auteur, artiste;
-    private int annee;
+    private LocalDate annee;
 
-    public DocumentDTO(String titre, String auteur, String artiste, int annee){
+    public DocumentDTO(String titre, String auteur, String artiste, LocalDate annee){
         this.titre = titre;
         this.auteur = auteur;
         this.artiste = artiste;

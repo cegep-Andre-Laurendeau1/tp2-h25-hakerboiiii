@@ -4,11 +4,10 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.Cascade;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-
+import java.util.Objects;
 
 
 @Data
@@ -52,11 +51,9 @@ public class EmpruntDetail {
     }
 
     public boolean isEnRetard(){
-        if (dateRetourActuelle == null){
-            return LocalDate.now().isAfter(dateRetourPrevue);
-        }
+        return Objects.requireNonNullElseGet(
+                dateRetourActuelle, LocalDate::now).isAfter(dateRetourPrevue);
 
-        return dateRetourActuelle.isAfter(dateRetourPrevue);
     }
 
     public void updateStatus(){

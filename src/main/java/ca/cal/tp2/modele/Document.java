@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 
 @Entity
 @Getter
@@ -17,7 +19,7 @@ public abstract class Document {
     @Setter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id_document;
+    private Long id_document;
 
     @Column(nullable = false)
     private String titre;
@@ -26,14 +28,14 @@ public abstract class Document {
     private int nbExemplaires;
 
     @Column()
-    private int annee;
+    private LocalDate datePublication;
 
 
 
-    public Document(String titre, int nbExemplaires, int annee) {
+    public Document(String titre, int nbExemplaires, LocalDate datePublication) {
         this.titre = titre;
         this.nbExemplaires = nbExemplaires;
-        this.annee = annee;
+        this.datePublication = datePublication;
     }
 
 

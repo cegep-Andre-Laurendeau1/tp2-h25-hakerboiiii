@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Entity
 @DiscriminatorValue("CD")
 @NoArgsConstructor
@@ -13,7 +15,7 @@ public class Cd extends Document {
     private String artiste,genre;
     private int duree;
 
-    public Cd(String titre, int nbExemplaires, int annee,String artiste, int duree, String genre) {
+    public Cd(String titre, int nbExemplaires, LocalDate annee, String artiste, int duree, String genre) {
         super(titre, nbExemplaires, annee);
         this.artiste = artiste;
         this.duree = duree;
