@@ -1,7 +1,9 @@
 package ca.cal.tp2.repository;
 
 import ca.cal.tp2.exception.DatabaseException;
+import ca.cal.tp2.exception.DocumentDoesNotExist;
 import ca.cal.tp2.modele.*;
+import ca.cal.tp2.service.dto.DocumentDTO;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
@@ -41,6 +43,19 @@ public class EmprunteurRepositoryJPA implements EmprunteurRepository {
 
         catch(Exception e){
             throw new DatabaseException(e);
+        }
+    }
+
+    @Override
+    public Document findDocumentByTitre(String titre) throws DocumentDoesNotExist {
+        try(EntityManager em = entityManagerFactory.createEntityManager()){
+            TypedQuery<Document> query = em.createQuery(
+                    "SELECT d FROM Document d WHERE d.titre = :titre", Document.class);
+            query.setParameter("titre", titre);
+            return query.getSingleResult();
+        }
+        catch(Exception e){
+            throw new DocumentDoesNotExist("Le document du titre : " + titre + " n'existe pas");
         }
     }
 

@@ -1,12 +1,16 @@
 package ca.cal.tp2;
 import ca.cal.tp2.exception.DatabaseException;
+import ca.cal.tp2.exception.DocumentDoesNotExist;
 import ca.cal.tp2.repository.EmprunteurRepositoryJPA;
 import ca.cal.tp2.repository.PreposeRepositoryJPA;
 import ca.cal.tp2.repository.UtilisateurRepositoryJPA;
 import ca.cal.tp2.service.EmprunteurService;
 import ca.cal.tp2.service.PreposeService;
 import ca.cal.tp2.service.UtilisateurService;
+import ca.cal.tp2.service.dto.CdDTO;
 import ca.cal.tp2.service.dto.DocumentDTO;
+import ca.cal.tp2.service.dto.LivreDTO;
+
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
@@ -57,7 +61,14 @@ public class MainH2 {
             List<DocumentDTO> documents =
                     preposeService.rechercherDocument(null, "Émile Zola", null, null);
             documents.forEach(System.out::println);
-//
+
+            LivreDTO livre = (LivreDTO) emprunteurService.rechercherDocumentParTitre("Germinal");
+            CdDTO cd = (CdDTO) emprunteurService.rechercherDocumentParTitre("Thriller");
+
+            System.out.println("Livre trouvé : " + livre.getTitre());
+
+
+
 //            emprunteurService.emprunter(alice, livre);
 //            emprunteurService.emprunter(alice, bete_humaine);
 //            emprunteurService.emprunter(alice, germinal);
@@ -91,7 +102,7 @@ public class MainH2 {
 //
 //
 
-        } catch (DatabaseException e) {
+        } catch (DatabaseException | DocumentDoesNotExist e) {
             throw new RuntimeException(e);
         }
     }

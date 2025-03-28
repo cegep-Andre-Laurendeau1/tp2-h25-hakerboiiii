@@ -4,7 +4,10 @@ import ca.cal.tp2.exception.DatabaseException;
 import ca.cal.tp2.modele.Document;
 import ca.cal.tp2.modele.*;
 import ca.cal.tp2.repository.PreposeRepository;
+import ca.cal.tp2.service.dto.CdDTO;
 import ca.cal.tp2.service.dto.DocumentDTO;
+import ca.cal.tp2.service.dto.DvdDTO;
+import ca.cal.tp2.service.dto.LivreDTO;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -49,19 +52,47 @@ public class PreposeService {
 
     }
 
+    private void documentCree(String titre, int nbExemplaires, Supplier<Document> documentSupplier)
+            throws DatabaseException{
+        Document docExistant = preposeRepository.findDocumentByTitre(titre);
+        if(docExistant != null){
+            docExistant.setNbExemplaires(docExistant.getNbExemplaires() + nbExemplaires);
+            preposeRepository.saveDocument(docExistant);
+        }
+        else{
+            Document document = documentSupplier.get();
+            preposeRepository.saveDocument(document);
+        }
+    }
+
     private List<DocumentDTO> convertToDTO(List<Document> resultats){
-        return resultats.stream()
+         return resultats.stream()
                 .map(doc -> switch (doc) {
                     case Livre livre ->
-                            new DocumentDTO(doc.getTitre(), livre.getAuteur(), null, doc.getDatePublication());
+
+                            new DocumentDTO(doc.getTitre(), doc.getNbExemplaires(), doc.getDatePublication());
                     case Cd cd ->
-                            new DocumentDTO(doc.getTitre(), null, cd.getArtiste(), doc.getDatePublication());
+                            new DocumentDTO(doc.getTitre(), doc.getNbExemplaires(), doc.getDatePublication());
                     case Dvd dvd ->
-                            new DocumentDTO(doc.getTitre(), null, dvd.getDirector(), doc.getDatePublication());
+                            new DocumentDTO(doc.getTitre(), doc.getNbExemplaires(), doc.getDatePublication());
                     case null, default -> null;
                 })
                 .collect(Collectors.toList());
     }
+
+//    private List<DocumentDTO> convertToDTO(List<Document> resultats){
+//        return resultats.stream()
+//                .map(doc -> switch (doc) {
+//                    case Livre livre ->
+//                            new DocumentDTO(doc.getTitre(), livre.getAuteur(), null, doc.getDatePublication());
+//                    case Cd cd ->
+//                            new DocumentDTO(doc.getTitre(), doc.getNbExemplaires(), cd.getArtiste(), doc.getDatePublication());
+//                    case Dvd dvd ->
+//                            new DocumentDTO(doc.getTitre(), null, dvd.getDirector(), doc.getDatePublication());
+//                    case null, default -> null;
+//                })
+//                .collect(Collectors.toList());
+//    }
 
     private QueryBuilderResult queryBuilder(String titre, String auteur, Integer annee, String artiste){
         StringBuilder jpql = new StringBuilder("SELECT d FROM Document d WHERE 1=1");
@@ -86,19 +117,6 @@ public class PreposeService {
         }
 
         return new QueryBuilderResult(jpql.toString(), parameters);
-    }
-
-    private void documentCree(String titre, int nbExemplaires, Supplier<Document> documentSupplier)
-            throws DatabaseException{
-        Document docExistant = preposeRepository.findDocumentByTitre(titre);
-        if(docExistant != null){
-            docExistant.setNbExemplaires(docExistant.getNbExemplaires() + nbExemplaires);
-            preposeRepository.saveDocument(docExistant);
-        }
-        else{
-            Document document = documentSupplier.get();
-            preposeRepository.saveDocument(document);
-        }
     }
     private record QueryBuilderResult(String jpql, Map<String, Object> parameters) {}
 }

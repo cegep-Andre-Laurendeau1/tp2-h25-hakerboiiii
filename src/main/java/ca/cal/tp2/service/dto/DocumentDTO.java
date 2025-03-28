@@ -1,29 +1,24 @@
 package ca.cal.tp2.service.dto;
-
+import ca.cal.tp2.modele.Document;
 import lombok.Getter;
 
 import java.time.LocalDate;
 
+
 @Getter
-public class DocumentDTO{
-    private String titre, auteur, artiste;
+public class DocumentDTO {
+    private String titre;
+    private int nbExemplaires;
     private LocalDate annee;
 
-    public DocumentDTO(String titre, String auteur, String artiste, LocalDate annee){
+    public DocumentDTO(String titre, int nbExemplaires, LocalDate annee) {
         this.titre = titre;
-        this.auteur = auteur;
-        this.artiste = artiste;
+        this.nbExemplaires = nbExemplaires;
         this.annee = annee;
     }
 
-    @Override
-    public String toString(){
-        return "DocumentDTO{" +
-                "titre = '" + titre + '\'' +
-                ", auteur = '" + (auteur != null ? auteur: "N/A") + '\'' +
-                ", artiste = '" + (artiste != null ? artiste: "N/A") + '\'' +
-                ", annee = " + annee +
-                '}';
-    }
 
+    public static DocumentDTO toDTO(Document doc) {
+        return new DocumentDTO(doc.getTitre(), doc.getNbExemplaires(), doc.getDatePublication());
+    }
 }

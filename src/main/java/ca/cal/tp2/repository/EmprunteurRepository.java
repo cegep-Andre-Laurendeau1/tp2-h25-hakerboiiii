@@ -1,9 +1,11 @@
 package ca.cal.tp2.repository;
 
 import ca.cal.tp2.exception.DatabaseException;
+import ca.cal.tp2.exception.DocumentDoesNotExist;
 import ca.cal.tp2.modele.Document;
 import ca.cal.tp2.modele.EmpruntDetail;
 import ca.cal.tp2.modele.Emprunteur;
+import ca.cal.tp2.service.dto.DocumentDTO;
 
 import java.util.List;
 
@@ -12,5 +14,6 @@ public interface EmprunteurRepository {
     void retourneDocument(Emprunteur emp, Document doc) throws DatabaseException;
     List<EmpruntDetail> chercherListeEmprunts(Emprunteur emp);
     void payerAmende(Emprunteur emp, double montant) throws DatabaseException;
+    Document findDocumentByTitre(String titre) throws DocumentDoesNotExist;
 
 }

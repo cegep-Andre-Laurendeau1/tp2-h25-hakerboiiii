@@ -24,10 +24,7 @@ public class Dvd extends Document {
     }
 
 
-    @Override
-    public String getSql() {
-        return "INSERT INTO Dvd VALUES (?,?,?,?)";
-    }
+
 
     @Override
     public Long nbSemaines() {

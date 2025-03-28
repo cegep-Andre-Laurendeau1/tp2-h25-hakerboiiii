@@ -38,7 +38,5 @@ public abstract class Document {
         this.datePublication = datePublication;
     }
 
-
-    public abstract String getSql();
     public abstract Long nbSemaines();
 }

@@ -22,10 +22,7 @@ public class Cd extends Document {
         this.genre = genre;
     }
 
-    @Override
-    public String getSql(){
-        return "INSERT INTO Cd VALUES (?,?,?,?)";
-    }
+
 
     @Override
     public Long nbSemaines() {

@@ -2,7 +2,7 @@ package ca.cal.tp2.service.dto;
 
 import ca.cal.tp2.modele.Utilisateur;
 
-public record UtilisateurDTO(long id, String nom, String email,
+public record UtilisateurDTO(Long id, String nom, String email,
                              String numeroTelephone) {
 
     public static UtilisateurDTO toDTO(Utilisateur user){
