@@ -26,7 +26,6 @@ public class Emprunt {
 
 
     private LocalDate date_emprunt;
-    private String statuts;
 
     @OneToMany(mappedBy = "emprunt", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EmpruntDetail> empruntDetails = new ArrayList<>();
@@ -35,9 +34,6 @@ public class Emprunt {
     public Emprunt(Emprunteur emprunteur){
         this.emprunteur = emprunteur;
         this.date_emprunt = LocalDate.now();
-        this.statuts = "Active";
 
     }
-
-
 }

@@ -13,8 +13,8 @@ public class LivreDTO extends DocumentDTO {
     private String auteur, editeur;
     private int nbPages;
 
-    public LivreDTO(String titre, int nbExemplaires, LocalDate annee, String isbn, String auteur, String editeur, int nbPages) {
-        super(titre, nbExemplaires, annee);
+    public LivreDTO(Long id, String titre, int nbExemplaires, LocalDate annee, String isbn, String auteur, String editeur, int nbPages) {
+        super(id, titre, nbExemplaires, annee);
         this.isbn = isbn;
         this.auteur = auteur;
         this.editeur = editeur;
@@ -22,7 +22,7 @@ public class LivreDTO extends DocumentDTO {
     }
 
     public static LivreDTO toDTO(Livre livre) {
-        return new LivreDTO(livre.getTitre(), livre.getNbExemplaires(), livre.getDatePublication(),
+        return new LivreDTO(livre.getId_document(), livre.getTitre(), livre.getNbExemplaires(), livre.getDatePublication(),
                 livre.getIsbn(), livre.getAuteur(), livre.getEditeur(), livre.getNbPages());
     }
 }

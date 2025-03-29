@@ -4,59 +4,84 @@ import ca.cal.tp2.exception.DatabaseException;
 import ca.cal.tp2.exception.DocumentDoesNotExist;
 import ca.cal.tp2.modele.*;
 import ca.cal.tp2.service.dto.DocumentDTO;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
-import jakarta.persistence.TypedQuery;
+import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public class EmprunteurRepositoryJPA implements EmprunteurRepository {
     private final EntityManagerFactory entityManagerFactory =
             Persistence.createEntityManagerFactory("libraryH2"); //Nom de la base de données
 
     @Override
-    public void emprunter(Emprunteur emprunteur, Document doc) throws DatabaseException {
-        try(EntityManager em = entityManagerFactory.createEntityManager()){
-            em.getTransaction().begin();
-            emprunteur = getEmprunteur(em, emprunteur.getEmail());
-            doc = getDocument(em, doc.getTitre());
+    public void emprunter(Emprunt emprunt) throws DatabaseException {
 
-            if(doc.getNbExemplaires() <= 0) {
-                throw new RuntimeException("Il n'y a plus d'exemplaires disponibles pour le document :  " +
-                        doc.getTitre());
+        EntityManager em = entityManagerFactory.createEntityManager();
+        EntityTransaction tx = em.getTransaction();
+
+        try{
+            tx.begin();
+
+            if(emprunt.getEmprunteur() != null && em.contains(emprunt.getEmprunteur())){
+                emprunt.setEmprunteur(em.merge(emprunt.getEmprunteur()));
             }
 
-            Emprunt emprunt = getEmprunt(em, emprunteur);
+            for(EmpruntDetail ed: emprunt.getEmpruntDetails()){
+                if(!em.contains(ed.getDocument()))
+                    ed.setDocument(em.merge(ed.getDocument()));
+            }
 
-            EmpruntDetail empruntDetail = new EmpruntDetail(emprunt, doc);
-            em.persist(empruntDetail);
+            if(emprunt.getId_emprunt() == 0){
+                em.persist(emprunt);
+            }
+            else{
+                em.merge(emprunt);
+            }
 
-            doc.setNbExemplaires(doc.getNbExemplaires() - 1);
-            em.merge(doc);
-
-            em.getTransaction().commit();
-
-            System.out.println("Emprunt effectué avec succès emprunté par " + emprunteur.getNom());
+            tx.commit();
         }
+
+        catch(Exception e){
+            if(tx != null && tx.isActive())
+                tx.rollback();
+            throw new DatabaseException(e);
+        }
+
+        finally{
+            em.close();
+        }
+//        try(EntityManager em = entityManagerFactory.createEntityManager()){
+//            em.getTransaction().begin();
+//
+//            if(emprunt.getId_emprunt() == 0){
+//                em.persist(emprunt);
+//            }
+//            else{
+//                em.merge(emprunt);
+//            }
+//
+//            em.getTransaction().commit();
+//
+//        }
+//        catch(Exception e){
+//            throw new DatabaseException(e);
+//        }
+    }
+
+    @Override
+    public Optional<Emprunteur> findById(Long id) throws DatabaseException{
+        try(EntityManager em = entityManagerFactory.createEntityManager()){
+
+            Emprunteur emp = em.find(Emprunteur.class, id);
+            return Optional.ofNullable(emp);
+        }
+
 
         catch(Exception e){
             throw new DatabaseException(e);
         }
-    }
 
-    @Override
-    public Document findDocumentByTitre(String titre) throws DocumentDoesNotExist {
-        try(EntityManager em = entityManagerFactory.createEntityManager()){
-            TypedQuery<Document> query = em.createQuery(
-                    "SELECT d FROM Document d WHERE d.titre = :titre", Document.class);
-            query.setParameter("titre", titre);
-            return query.getSingleResult();
-        }
-        catch(Exception e){
-            throw new DocumentDoesNotExist("Le document du titre : " + titre + " n'existe pas");
-        }
     }
 
     @Override
@@ -71,7 +96,6 @@ public class EmprunteurRepositoryJPA implements EmprunteurRepository {
                 throw new RuntimeException("L'emprunteur n'a pas emprunté ce document");
             }
             empruntDetail.setDateRetourActuelle(LocalDate.now());
-            empruntDetail.updateStatus();
             em.merge(empruntDetail);
 
             doc.setNbExemplaires(doc.getNbExemplaires() + 1);
@@ -147,23 +171,23 @@ public class EmprunteurRepositoryJPA implements EmprunteurRepository {
 
     }
 
-    private Emprunt getEmprunt(EntityManager em, Emprunteur emprunteur){
-        Emprunt emp;
-        TypedQuery<Emprunt> empruntQuery = em.createQuery(
-                "SELECT e FROM Emprunt e WHERE e.emprunteur = :emprunteur" +
-                        " AND e.statuts =  'Emprunte'", Emprunt.class);
-        empruntQuery.setParameter("emprunteur", emprunteur);
-        List<Emprunt> empruntsExistants = empruntQuery.getResultList();
-
-        if(empruntsExistants.isEmpty()){
-            emp = new Emprunt(emprunteur);
-            em.persist(emp);
-        }
-        else{
-            emp = empruntsExistants.getFirst();
-        }
-        return emp;
-    }
+//    private Emprunt getEmprunt(EntityManager em, Emprunteur emprunteur){
+//        Emprunt emp;
+//        TypedQuery<Emprunt> empruntQuery = em.createQuery(
+//                "SELECT e FROM Emprunt e WHERE e.emprunteur = :emprunteur" +
+//                        " AND e.statuts =  'Emprunte'", Emprunt.class);
+//        empruntQuery.setParameter("emprunteur", emprunteur);
+//        List<Emprunt> empruntsExistants = empruntQuery.getResultList();
+//
+//        if(empruntsExistants.isEmpty()){
+//            emp = new Emprunt(emprunteur);
+//            em.persist(emp);
+//        }
+//        else{
+//            emp = empruntsExistants.getFirst();
+//        }
+//        return emp;
+//    }
 
     private Document getDocument(EntityManager em, String titre){
         TypedQuery<Document> query = em.createQuery(

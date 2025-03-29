@@ -1,6 +1,7 @@
 package ca.cal.tp2;
 import ca.cal.tp2.exception.DatabaseException;
 import ca.cal.tp2.exception.DocumentDoesNotExist;
+import ca.cal.tp2.modele.Document;
 import ca.cal.tp2.repository.EmprunteurRepositoryJPA;
 import ca.cal.tp2.repository.PreposeRepositoryJPA;
 import ca.cal.tp2.repository.UtilisateurRepositoryJPA;
@@ -13,6 +14,7 @@ import ca.cal.tp2.service.dto.LivreDTO;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 
 //todo: Pas importer couche modèle dans Main. Utiliser les services.
@@ -26,7 +28,9 @@ public class MainH2 {
         TcpServeur.startTcpServer();
         UtilisateurService utilisateurService = new UtilisateurService(new UtilisateurRepositoryJPA());
         PreposeService preposeService = new PreposeService(new PreposeRepositoryJPA());
-        EmprunteurService emprunteurService = new EmprunteurService(new EmprunteurRepositoryJPA());
+        EmprunteurService emprunteurService = new EmprunteurService(
+                new EmprunteurRepositoryJPA(),
+                new PreposeRepositoryJPA());
 
 
         try{
@@ -66,13 +70,13 @@ public class MainH2 {
             CdDTO cd = (CdDTO) emprunteurService.rechercherDocumentParTitre("Thriller");
 
             System.out.println("Livre trouvé : " + livre.getTitre());
+            System.out.println("Cd trouvé : " + cd.getTitre());
 
 
 
-//            emprunteurService.emprunter(alice, livre);
-//            emprunteurService.emprunter(alice, bete_humaine);
-//            emprunteurService.emprunter(alice, germinal);
-//            emprunteurService.emprunter(thomas, cd);
+            emprunteurService.emprunter(1L, Arrays.asList(livre.getId(),  cd.getId(), livre.getId()));
+            emprunteurService.emprunter(2L, Arrays.asList(livre.getId())); //Alice emprunte Germinal, mais il ne reste plus en stock.
+
 //
 //
 //            List<EmpruntDetail> emprunts = emprunteurService.retournerListeEmprunts(alice);
