@@ -1,7 +1,6 @@
 package ca.cal.tp2;
 import ca.cal.tp2.exception.DatabaseException;
 import ca.cal.tp2.exception.DocumentDoesNotExist;
-import ca.cal.tp2.modele.Document;
 import ca.cal.tp2.repository.EmprunteurRepositoryJPA;
 import ca.cal.tp2.repository.PreposeRepositoryJPA;
 import ca.cal.tp2.repository.UtilisateurRepositoryJPA;
@@ -10,6 +9,7 @@ import ca.cal.tp2.service.PreposeService;
 import ca.cal.tp2.service.UtilisateurService;
 import ca.cal.tp2.service.dto.CdDTO;
 import ca.cal.tp2.service.dto.DocumentDTO;
+import ca.cal.tp2.service.dto.EmprunteurDetailDTO;
 import ca.cal.tp2.service.dto.LivreDTO;
 
 import java.sql.SQLException;
@@ -17,11 +17,6 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
-//todo: Pas importer couche modèle dans Main. Utiliser les services.
-//todo: Modifier le méthode emprunteur pour qu'un client ajoute plusieurs documents à la fois.
-// Donc, changer le paramètre de Document à List<Document>.
-//todo: enlever le variable status.
-//todo: enlever UtilisateurService. Laisser le prépose ajouter les utilisateurs.
 
 public class MainH2 {
     public static void main(String[] args) throws SQLException, DatabaseException {
@@ -69,36 +64,36 @@ public class MainH2 {
             LivreDTO livre = (LivreDTO) emprunteurService.rechercherDocumentParTitre("Germinal");
             CdDTO cd = (CdDTO) emprunteurService.rechercherDocumentParTitre("Thriller");
 
+
+
             System.out.println("Livre trouvé : " + livre.getTitre());
             System.out.println("Cd trouvé : " + cd.getTitre());
 
 
 
             emprunteurService.emprunter(1L, Arrays.asList(livre.getId(),  cd.getId(), livre.getId()));
-            emprunteurService.emprunter(2L, Arrays.asList(livre.getId())); //Alice emprunte Germinal, mais il ne reste plus en stock.
+            //emprunteurService.emprunter(2L, Arrays.asList(livre.getId())); //Alice emprunte Germinal, mais il ne reste plus en stock.
 
-//
-//
-//            List<EmpruntDetail> emprunts = emprunteurService.retournerListeEmprunts(alice);
-//
-//            System.out.println("Liste des emprunts de : " + alice.getNom() + "(" + alice.getEmail() + ")");
-//
-//            if(emprunts.isEmpty()){
-//                System.out.println("Aucun empprunt");
-//            }
-//            else {
-//                System.out.println("-----------------------------------------------------");
-//                System.out.printf("%-30s | %-12s | %-12s\n", "Titre du document", "Date Emprunt",
-//                        "Jour de retour");
-//                System.out.println("-----------------------------------------------------");
-//                for (EmpruntDetail empruntDetail : emprunts) {
-//                    System.out.printf("%-30s | %-12s | %-12s\n",
-//                            empruntDetail.getDocument().getTitre(),
-//                            empruntDetail.getEmprunt().getDate_emprunt(),
-//                            empruntDetail.getDateRetourPrevue());
-//                }
-//                System.out.println("-----------------------------------------------------");
-//            }
+
+            try{
+                List<EmprunteurDetailDTO> emprunts = emprunteurService.retournerListeEmprunts(1L);
+                System.out.println("-----------------------------------------------------");
+                System.out.printf("%-30s | %-12s | %-12s | %-20s\n", "Titre du document", "Date Emprunt",
+                        "Date de retour", "Emprunteur");
+                System.out.println("-----------------------------------------------------");
+                for (EmprunteurDetailDTO empruntDetail : emprunts) {
+                    System.out.printf("%-30s | %-12s | %-12s | %-20s\n",
+                            empruntDetail.getTitreDocument(),
+                            empruntDetail.getDateEmprunt(),
+                            empruntDetail.getDateRetour(),
+                            empruntDetail.getNomEmprunteur());
+                }
+                System.out.println("-----------------------------------------------------");
+            }
+            catch(DatabaseException e){
+                System.out.println(e.getMessage());
+            }
+
 //
 //            emprunteurService.retourneDocument(alice, livre);
 //            emprunteurService.retourneDocument(alice, bete_humaine);

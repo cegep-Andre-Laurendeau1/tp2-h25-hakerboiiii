@@ -13,7 +13,7 @@ import java.util.Optional;
 public interface EmprunteurRepository {
     void emprunter(Emprunt emprunt) throws DatabaseException;
     void retourneDocument(Emprunteur emp, Document doc) throws DatabaseException;
-    List<EmpruntDetail> chercherListeEmprunts(Emprunteur emp);
+    List<EmpruntDetail> chercherListeEmprunts(Long id) throws DatabaseException;
     void payerAmende(Emprunteur emp, double montant) throws DatabaseException;
     Optional<Emprunteur> findById(Long id) throws DatabaseException;
 

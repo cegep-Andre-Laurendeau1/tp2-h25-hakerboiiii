@@ -7,16 +7,13 @@ import ca.cal.tp2.exception.EmprunteurDoesNotExists;
 import ca.cal.tp2.modele.*;
 import ca.cal.tp2.repository.EmprunteurRepository;
 import ca.cal.tp2.repository.PreposeRepository;
-import ca.cal.tp2.service.dto.CdDTO;
-import ca.cal.tp2.service.dto.DocumentDTO;
-import ca.cal.tp2.service.dto.DvdDTO;
-import ca.cal.tp2.service.dto.LivreDTO;
+import ca.cal.tp2.service.dto.*;
 import jakarta.transaction.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 
 public class EmprunteurService {
     private final EmprunteurRepository emprunteurRepository;
@@ -121,8 +118,15 @@ public class EmprunteurService {
         emprunteurRepository.retourneDocument(emp, doc);
     }
 
-    public List<EmpruntDetail> retournerListeEmprunts(Emprunteur emp){
-        return emprunteurRepository.chercherListeEmprunts(emp);
+    public List<EmprunteurDetailDTO> retournerListeEmprunts(Long id) throws DatabaseException {
+        List<EmpruntDetail> empruntDetails = emprunteurRepository.chercherListeEmprunts(id);
+
+
+
+        return empruntDetails.stream()
+                .map(EmprunteurDetailDTO::toDTO)
+                .collect(Collectors.toList());
+
     }
 
     public void payerAmende(Emprunteur emp, Double montant) throws DatabaseException {

@@ -1,9 +1,7 @@
 package ca.cal.tp2.repository;
 
 import ca.cal.tp2.exception.DatabaseException;
-import ca.cal.tp2.exception.DocumentDoesNotExist;
 import ca.cal.tp2.modele.*;
-import ca.cal.tp2.service.dto.DocumentDTO;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -17,11 +15,8 @@ public class EmprunteurRepositoryJPA implements EmprunteurRepository {
     @Override
     public void emprunter(Emprunt emprunt) throws DatabaseException {
 
-        EntityManager em = entityManagerFactory.createEntityManager();
-        EntityTransaction tx = em.getTransaction();
-
-        try{
-            tx.begin();
+        try(EntityManager em = entityManagerFactory.createEntityManager()){
+            em.getTransaction().begin();
 
             if(emprunt.getEmprunteur() != null && em.contains(emprunt.getEmprunteur())){
                 emprunt.setEmprunteur(em.merge(emprunt.getEmprunteur()));
@@ -39,34 +34,11 @@ public class EmprunteurRepositoryJPA implements EmprunteurRepository {
                 em.merge(emprunt);
             }
 
-            tx.commit();
+            em.getTransaction().commit();
         }
-
         catch(Exception e){
-            if(tx != null && tx.isActive())
-                tx.rollback();
             throw new DatabaseException(e);
         }
-
-        finally{
-            em.close();
-        }
-//        try(EntityManager em = entityManagerFactory.createEntityManager()){
-//            em.getTransaction().begin();
-//
-//            if(emprunt.getId_emprunt() == 0){
-//                em.persist(emprunt);
-//            }
-//            else{
-//                em.merge(emprunt);
-//            }
-//
-//            em.getTransaction().commit();
-//
-//        }
-//        catch(Exception e){
-//            throw new DatabaseException(e);
-//        }
     }
 
     @Override
@@ -76,8 +48,6 @@ public class EmprunteurRepositoryJPA implements EmprunteurRepository {
             Emprunteur emp = em.find(Emprunteur.class, id);
             return Optional.ofNullable(emp);
         }
-
-
         catch(Exception e){
             throw new DatabaseException(e);
         }
@@ -114,16 +84,20 @@ public class EmprunteurRepositoryJPA implements EmprunteurRepository {
     }
 
     @Override
-    public List<EmpruntDetail> chercherListeEmprunts(Emprunteur emp){
+    public List<EmpruntDetail> chercherListeEmprunts(Long id) throws DatabaseException {
         try(EntityManager em = entityManagerFactory.createEntityManager()){
-            TypedQuery query = em.createQuery(
+            TypedQuery<EmpruntDetail> query = em.createQuery(
                     "SELECT ed FROM EmpruntDetail ed" +
                             " JOIN ed.emprunt e  " +
                             " JOIN e.emprunteur u " +
-                            " WHERE type(u) = Emprunteur AND u.email  = :email" +
+                            " WHERE type(u) = Emprunteur AND u.user_id  = :id" +
                             " ORDER BY ed.dateRetourPrevue ASC", EmpruntDetail.class);
-            query.setParameter("email", emp.getEmail());
+            query.setParameter("id", id);
             return query.getResultList();
+        }
+
+        catch(Exception e){
+            throw new DatabaseException(e);
         }
     }
 
@@ -171,23 +145,7 @@ public class EmprunteurRepositoryJPA implements EmprunteurRepository {
 
     }
 
-//    private Emprunt getEmprunt(EntityManager em, Emprunteur emprunteur){
-//        Emprunt emp;
-//        TypedQuery<Emprunt> empruntQuery = em.createQuery(
-//                "SELECT e FROM Emprunt e WHERE e.emprunteur = :emprunteur" +
-//                        " AND e.statuts =  'Emprunte'", Emprunt.class);
-//        empruntQuery.setParameter("emprunteur", emprunteur);
-//        List<Emprunt> empruntsExistants = empruntQuery.getResultList();
-//
-//        if(empruntsExistants.isEmpty()){
-//            emp = new Emprunt(emprunteur);
-//            em.persist(emp);
-//        }
-//        else{
-//            emp = empruntsExistants.getFirst();
-//        }
-//        return emp;
-//    }
+
 
     private Document getDocument(EntityManager em, String titre){
         TypedQuery<Document> query = em.createQuery(
